@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HDS · Acceso</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&family=Barlow+Condensed:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #E8EAEE;
+            --surface: #FFFFFF;
+            --surface-2: #F3F5F9;
+            --border: rgba(11, 28, 63, 0.08);
+            --border-strong: rgba(11, 28, 63, 0.16);
+            --text: #0B1C3F;
+            --text-dim: #6B7A93;
+            --accent: #0D63EA;
+            --accent-soft: rgba(13, 99, 234, 0.10);
+            --glow: rgba(13, 99, 234, 0.28);
+            --ok: #16A35A;
+            --warn: #E8902A;
+            --err: #E5484D;
+            --radius: 10px;
+            --radius-sm: 7px;
+            --font-display: 'Sora', sans-serif;
+            --font-mono: 'Barlow Condensed', monospace;
+            --font-ui: 'Inter', system-ui, sans-serif;
+            --accent-dim: rgba(13, 99, 234, 0.10);
+            --ink: #000E2B;
+            --surface-2: #F3F5F9;
+            --radius: 24px;
+            --radius-sm: 14px;
+            --ease: cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; }
+        body {
+            background:
+                radial-gradient(900px 500px at 70% -10%, rgba(13, 99, 234, 0.07), transparent 60%),
+                radial-gradient(700px 400px at 15% 110%, rgba(22, 163, 90, 0.05), transparent 60%),
+                var(--bg);
+            color: var(--text);
+            font-family: var(--font-ui);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            font-size: 12px;
+        }
+        ::selection { background: var(--accent); color: var(--bg); }
+
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .container { width: 100%; max-width: 440px; }
+        .card {
+            background: linear-gradient(160deg, var(--surface-2), var(--surface));
+            border: 1px solid var(--border-strong);
+            padding: 36px;
+            border-radius: 18px;
+            box-shadow: 0 12px 50px rgba(11, 28, 63, 0.12), 0 2px 10px rgba(11, 28, 63, 0.08);
+            animation: cardIn 0.6s var(--ease);
+        }
+        .logo { text-align: center; margin-bottom: 30px; }
+        .logo h1 {
+            font-family: var(--font-display);
+            font-size: 34px;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            color: var(--ink);
+            background: none;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 4px;
+        }
+        .logo p {
+            font-size: 9px;
+            color: var(--text-dim);
+            letter-spacing: 0.32em;
+            text-transform: uppercase;
+        }
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 26px;
+            padding: 5px;
+            background: rgba(11, 28, 63, 0.08);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            font-family: var(--font-ui);
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            border-radius: 9px;
+            transition: all 0.25s var(--ease);
+        }
+        .tab-btn:hover { color: var(--text); }
+        .tab-btn.active {
+            color: #FFFFFF;
+            background: var(--accent);
+            font-weight: 600;
+            box-shadow: 0 3px 14px var(--glow);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeUp 0.35s var(--ease); }
+        .field { margin-bottom: 15px; }
+        .field label {
+            display: block;
+            font-size: 8.5px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+        .field input {
+            width: 100%;
+            padding: 11px 13px;
+            background: rgba(11, 28, 63, 0.08);
+            border: 1px solid var(--border-strong);
+            color: var(--text);
+            font-family: var(--font-ui);
+            font-size: 12px;
+            border-radius: var(--radius-sm);
+            transition: all 0.22s var(--ease);
+        }
+        .field input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(13, 99, 234, 0.12);
+        }
+        .btn {
+            width: 100%;
+            padding: 11px;
+            background: var(--accent);
+            color: #FFFFFF;
+            border: none;
+            font-family: var(--font-ui);
+            font-size: 11px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            transition: all 0.25s var(--ease);
+            box-shadow: 0 2px 12px rgba(13, 99, 234, 0.25);
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 22px var(--glow); }
+        .btn:active { transform: translateY(0) scale(0.98); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn.ghost {
+            background: transparent;
+            color: var(--text-dim);
+            border: 1px solid var(--border-strong);
+            box-shadow: none;
+            font-weight: 500;
+        }
+        .btn.ghost:hover { color: var(--text); border-color: var(--text-dim); }
+        .message {
+            margin-top: 14px;
+            padding: 11px 13px;
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            display: none;
+            border: 1px solid;
+            animation: fadeUp 0.3s var(--ease);
+        }
+        .message.ok { background: rgba(22, 163, 90, 0.08); color: var(--ok); border-color: rgba(22, 163, 90, 0.3); display: block; }
+        .message.err { background: var(--err-dim); color: var(--err); border-color: rgba(229, 72, 77, 0.28); display: block; }
+        .message.warn { background: var(--warn-dim); color: var(--warn); border-color: rgba(232, 144, 42, 0.30); display: block; }
+        .status-section {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-top: 18px;
+        }
+        .status-section.logged-in {
+            background: rgba(22, 163, 90, 0.05);
+            padding: 16px;
+            border-radius: var(--radius);
+            border: 1px solid rgba(22, 163, 90, 0.2);
+            animation: fadeUp 0.4s var(--ease);
+        }
+        .user-info { margin-bottom: 4px; }
+        .user-info strong { color: var(--ok); }
+        .role-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--accent-soft);
+            border: 1px solid rgba(13, 99, 234, 0.25);
+            border-radius: 999px;
+            font-size: 9px;
+            margin-top: 8px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <div class="logo">
+            <h1>HDS</h1>
+            <p>Warehouse System</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="login">Iniciar sesión</button>
+            <button class="tab-btn" data-tab="signup">Crear cuenta</button>
+        </div>
+
+        <div class="tab-content active" id="loginTab">
+            <form id="loginForm">
+                <div class="field">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="usuario@ejemplo.com" required>
+                </div>
+                <div class="field">
+                    <label>Contraseña</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn" id="loginBtn">Entrar</button>
+                <div class="message" id="loginMsg"></div>
+            </form>
+        </div>
+
+        <div class="tab-content" id="signupTab">
+            <form id="signupForm">
+                <div class="field">
+                    <label>Nombre completo</label>
+                    <input type="text" id="signupNombre" placeholder="Juan Pérez" required>
+                </div>
+                <div class="field">
+                    <label>Email</label>
+                    <input type="email" id="signupEmail" placeholder="juan@ejemplo.com" required>
+                </div>
+                <div class="field">
+                    <label>Contraseña</label>
+                    <input type="password" id="signupPassword" placeholder="••••••••" required>
+                </div>
+                <div class="field">
+                    <label>Confirmar contraseña</label>
+                    <input type="password" id="signupPasswordConfirm" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn" id="signupBtn">Crear cuenta</button>
+                <div class="message" id="signupMsg"></div>
+            </form>
+        </div>
+
+        <div class="status-section" id="statusSection"></div>
+    </div>
+</div>
+
+<!-- Supabase (UMD, expone window.supabase) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- Núcleo (orden importa) -->
+<script src="js/core/constants.js"></script>
+<script src="js/core/utils.js"></script>
+<script src="js/core/theme.js"></script>
+<script src="js/core/ui.js"></script>
+<script src="js/core/state.js"></script>
+<script src="js/core/api.js"></script>
+<script src="js/core/auth.js"></script>
+<script src="js/login.js"></script>
+
+</body>
+</html>

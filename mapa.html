@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HDS · Warehouse</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&family=Barlow+Condensed:wght@500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/tables.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/modals.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+<header>
+    <div class="brand-text">
+        <span class="name">HDS</span>
+        <span class="sub">Warehouse</span>
+    </div>
+    <div class="header-user">
+        <span class="uname">👤 <strong id="usuarioNombre">Usuario</strong></span>
+        <span id="usuarioRol">rol</span>
+        <button class="btn-theme" id="btnTheme" title="Cambiar tema" aria-label="Cambiar tema">🌙</button>
+        <button class="btn-salir" id="btnSalir">Salir</button>
+        <div class="status warn" id="conn"><span class="dot"></span><span id="connText">conectando…</span></div>
+    </div>
+</header>
+
+<!-- ============ VISTA: MAPA ============ -->
+<div class="view active" id="view-mapa">
+    <section class="stage">
+        <canvas id="canvas"></canvas>
+    </section>
+    <aside class="sidebar">
+        <div class="panel">
+            <div class="panel-title">Referencias</div>
+            <div class="legend" id="legend"></div>
+        </div>
+        <div class="panel">
+            <div class="panel-title">Herramientas</div>
+            <div class="tools">
+                <button id="agregar" class="btn-accent">+ Agregar</button>
+                <button id="editar" class="toggle">Editar</button>
+                <button id="guardar" class="btn-primary">Guardar</button>
+            </div>
+        </div>
+        <div class="info-panel" id="infoPanel"></div>
+    </aside>
+</div>
+
+<!-- ============ VISTA: STOCK ============ -->
+<div class="view" id="view-stock">
+    <div class="page">
+        <h2>Gestión de Stock</h2>
+        <div class="subtitle">Inventario completo del almacén</div>
+        <div class="page-toolbar">
+            <input type="text" id="stockSearch" placeholder="Buscar producto…">
+            <select id="stockCatFilter"><option value="">Todas las categorías</option></select>
+            <select id="stockEstanteFilter"><option value="">Todos los estantes</option></select>
+            <div class="spacer"></div>
+            <span class="total" id="stockTotal"></span>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Estante</th><th>Ubic.</th><th>Producto</th>
+                    <th>Categoría</th><th>Posición</th><th>Stock</th><th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody id="stockBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ============ VISTA: PEDIDOS ============ -->
+<div class="view" id="view-pedidos">
+    <div class="page">
+        <h2>Pedidos y Necesidades</h2>
+        <div class="subtitle">Solicitudes de productos e insumos</div>
+
+        <div class="pedido-form">
+            <div>
+                <label>Producto / Insumo</label>
+                <input type="text" id="pedProducto" maxlength="100" placeholder="Ej: Tornillos 5mm">
+            </div>
+            <div>
+                <label>Cantidad</label>
+                <input type="number" id="pedCantidad" value="1" min="1">
+            </div>
+            <div>
+                <label>Motivo / Detalle</label>
+                <input type="text" id="pedMotivo" maxlength="200" placeholder="Ej: Stock agotado en estante A">
+            </div>
+            <button class="btn-primary" id="pedEnviar">Enviar pedido</button>
+        </div>
+
+        <div class="page-toolbar">
+            <select id="pedEstadoFilter">
+                <option value="">Todos los estados</option>
+                <option value="pendiente">Pendiente</option>
+                <option value="aprobado">Aprobado</option>
+                <option value="rechazado">Rechazado</option>
+                <option value="recibido">Recibido</option>
+            </select>
+            <button id="pedRefresh">Actualizar</button>
+            <div class="spacer"></div>
+            <span class="total" id="pedTotal"></span>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Fecha</th><th>Solicitante</th><th>Producto</th><th>Cant.</th>
+                    <th>Motivo</th><th>Estado</th><th>Resuelto por</th><th id="pedAccionesTh"></th>
+                </tr>
+            </thead>
+            <tbody id="pedBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ============ VISTA: DASHBOARD ============ -->
+<div class="view" id="view-dashboard">
+    <div class="page">
+        <h2>Dashboard de Análisis</h2>
+        <div class="subtitle">Indicadores clave de rendimiento</div>
+
+        <div class="page-toolbar">
+            <select id="dashYear"></select>
+            <select id="dashQuarter">
+                <option value="">Todo el año</option>
+                <option value="1">Q1 (Ene–Mar)</option>
+                <option value="2">Q2 (Abr–Jun)</option>
+                <option value="3">Q3 (Jul–Sep)</option>
+                <option value="4">Q4 (Oct–Dic)</option>
+            </select>
+            <button id="dashRefresh">Actualizar</button>
+        </div>
+
+        <div class="kpi-grid" id="kpiGrid"></div>
+
+        <div class="chart-grid">
+            <div class="chart-box">
+                <h3>Movimientos por mes</h3>
+                <div id="chartMovimientos"></div>
+            </div>
+            <div class="chart-box">
+                <h3>Stock por categoría</h3>
+                <div id="chartCategorias"></div>
+            </div>
+            <div class="chart-box">
+                <h3>Actividad por usuario</h3>
+                <div id="chartUsuarios"></div>
+            </div>
+            <div class="chart-box">
+                <h3>Top productos con menos stock</h3>
+                <div id="chartBajoStock"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ VISTA: MOVIMIENTOS ============ -->
+<div class="view" id="view-movimientos">
+    <div class="page">
+        <h2>Movimientos</h2>
+        <div class="subtitle">Historial de cambios y actualizaciones de productos</div>
+        <div class="page-toolbar">
+            <select id="movAccionFilter">
+                <option value="">Todas las acciones</option>
+                <option value="crear">Crear</option>
+                <option value="editar">Editar</option>
+                <option value="eliminar">Eliminar</option>
+                <option value="stock">Stock</option>
+            </select>
+            <button id="movRefresh">Actualizar</button>
+            <div class="spacer"></div>
+            <span class="total" id="movTotal"></span>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Fecha</th><th>Usuario</th><th>Acción</th>
+                    <th>Producto</th><th>Estante</th><th>Stock</th><th>Detalle</th>
+                </tr>
+            </thead>
+            <tbody id="movBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ============ VISTA: USUARIOS ============ -->
+<div class="view" id="view-usuarios">
+    <div class="page">
+        <h2>Gestión de Usuarios</h2>
+        <div class="subtitle">Aprobación de cuentas, cambio de roles y eliminación</div>
+        <div class="users-grid">
+            <div>
+                <div class="section-label pend">⏳ Pendientes de aprobación (<span id="pendingCount">0</span>)</div>
+                <div id="pendingUsersList"></div>
+            </div>
+            <div>
+                <div class="section-label act">✓ Usuarios activos (<span id="activeCount">0</span>)</div>
+                <div id="activeUsersList"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ VISTA: PRODUCTO INDIVIDUAL ============ -->
+<div class="view" id="view-producto">
+    <div class="page">
+        <div class="prod-detail-back">
+            <button id="prodDetailBack">← Volver</button>
+        </div>
+        <div id="prodDetailContent"></div>
+    </div>
+</div>
+
+<!-- ============ NAVBAR ============ -->
+<nav class="taskbar">
+    <button data-view="mapa" class="active">🗺 Mapa</button>
+    <button data-view="stock">📦 Stock</button>
+    <button data-view="pedidos">📋 Pedidos</button>
+    <button data-view="dashboard">📊 Dashboard</button>
+    <button data-view="movimientos">🔄 Movimientos</button>
+    <button data-view="usuarios">👥 Usuarios</button>
+    <button data-view="producto" id="navProducto">🔍 Producto</button>
+</nav>
+
+<!-- ============ MODAL: CAMBIO DE CANTIDAD ============ -->
+<div class="modal" id="cantidadModal">
+    <div class="modal-content">
+        <h2 id="cantModalTitle">Cambiar cantidad</h2>
+        <div class="field" style="margin-top: 16px;">
+            <label>Cantidad</label>
+            <input type="number" id="cantModalInput" min="1" value="1" placeholder="ej: 5">
+        </div>
+        <div class="modal-buttons">
+            <button id="cantModalCancel">Cancelar</button>
+            <button class="btn-primary" id="cantModalConfirm">Confirmar</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============ MODALES ============ -->
+<div class="modal" id="agregarModal">
+    <div class="modal-content">
+        <h2>Agregar elemento</h2>
+        <span class="modal-label">Tipo</span>
+        <div class="tipo-selector" id="tipoSelector"></div>
+        <span class="modal-label">Nombre</span>
+        <input type="text" id="nombreInput" class="modal-input" maxlength="12" placeholder="Ej: A">
+        <div class="modal-buttons">
+            <button id="cancelBtn">Cancelar</button>
+            <button id="confirmBtn" class="btn-primary">Agregar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="prodModal">
+    <div class="prod-content">
+        <div class="prod-head" id="prodHead"></div>
+        <div class="prod-body" id="prodBody"></div>
+    </div>
+</div>
+
+<!-- Supabase (UMD, expone window.supabase) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- Núcleo -->
+<script src="js/core/constants.js"></script>
+<script src="js/core/utils.js"></script>
+<script src="js/core/theme.js"></script>
+<script src="js/core/ui.js"></script>
+<script src="js/core/state.js"></script>
+<script src="js/core/api.js"></script>
+<script src="js/core/auth.js"></script>
+
+<!-- Vistas -->
+<script src="js/views/mapa.js"></script>
+<script src="js/views/productos.js"></script>
+<script src="js/views/detalle.js"></script>
+<script src="js/views/stock.js"></script>
+<script src="js/views/pedidos.js"></script>
+<script src="js/views/dashboard.js"></script>
+<script src="js/views/movimientos.js"></script>
+<script src="js/views/usuarios.js"></script>
+
+<!-- Orquestador (último) -->
+<script src="js/app.js"></script>
+
+</body>
+</html>
