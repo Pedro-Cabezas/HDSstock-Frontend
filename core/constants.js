@@ -106,7 +106,7 @@ const PEDIDO_ESTADO = Object.freeze({
 //   {QR_BASE_URL}?producto={ID de Supabase}
 // ⚠️ Reemplazá esto por la URL real donde publiques la app (Vercel,
 //    Netlify, tu dominio, etc.). Mientras tanto es un placeholder.
-const QR_BASE_URL = 'https://TU-APP-ONLINE.com/mapa.html';
+const QR_BASE_URL = 'https://hd-sstock-frontend.vercel.app/mapa.html';
 
 // Servicio que genera la imagen del QR a partir de una URL/texto.
 const QR_API = 'https://api.qrserver.com/v1/create-qr-code/';
