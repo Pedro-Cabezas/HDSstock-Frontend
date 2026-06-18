@@ -1,0 +1,8 @@
+cat > package.json << 'EOF'
+{
+  "name": "hds-warehouse-frontend",
+  "version": "1.0.0",
+  "description": "Sistema de gestión de almacén HDS Warehouse Control",
+  "private": true
+}
+EOF
