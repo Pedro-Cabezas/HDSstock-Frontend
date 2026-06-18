@@ -1,0 +1,154 @@
+/* ============================================================
+   HDS Warehouse · variables.css
+   Sistema de diseño — SaaS empresarial / blueprint industrial
+   Tokens de color, tipografía, forma, sombras y animaciones base
+   ============================================================ */
+
+:root {
+    /* ── Fondos y superficies ── */
+    --desk: #E8EAEE;          /* fondo "mesa de trabajo" gris azulado */
+    --bg: #E8EAEE;
+    --surface: #FFFFFF;       /* tarjetas */
+    --surface-2: #F3F5F9;     /* inputs, hover, relleno sutil */
+    --surface-3: #ECEFF4;     /* superficie terciaria */
+
+    /* ── Texto ── */
+    --ink: #000E2B;           /* títulos */
+    --text: #0B1C3F;          /* texto principal */
+    --text-dim: #6B7A93;      /* secundario / muted */
+
+    /* ── Bordes (dos intensidades) ── */
+    --border: rgba(11, 28, 63, 0.08);
+    --border-strong: rgba(11, 28, 63, 0.14);
+
+    /* ── Acento primario (azul, ÚNICO color de acción) ── */
+    --accent: #0D63EA;
+    --accent-dim: rgba(13, 99, 234, 0.10);
+    --accent-soft: rgba(13, 99, 234, 0.10);
+    --glow: rgba(13, 99, 234, 0.28);
+
+    /* ── Estados (semánticos, nunca decorativos) ── */
+    --ok: #16A35A;            --ok-dim: rgba(22, 163, 90, 0.12);
+    --warn: #E8902A;          --warn-dim: rgba(232, 144, 42, 0.14);
+    --err: #E5484D;           --err-dim: rgba(229, 72, 77, 0.12);
+    --accent-2: #16A35A;
+
+    /* ── Forma (radios grandes y consistentes) ── */
+    --radius: 18px;           /* tarjetas grandes */
+    --radius-sm: 14px;        /* inputs / botones */
+    --radius-hero: 24px;      /* login, elementos hero */
+
+    /* ── Tipografías ── */
+    --font-display: 'Sora', 'Inter', sans-serif;   /* títulos, KPIs, branding */
+    --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono: 'Barlow Condensed', monospace;    /* códigos, coordenadas */
+
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+    /* ── Sombras en capas (nunca duras) ── */
+    --shadow-sm: 0 1px 2px rgba(11, 28, 63, 0.06);
+    --shadow-1: 0 1px 2px rgba(11, 28, 63, 0.06), 0 12px 30px rgba(11, 28, 63, 0.07);
+    --shadow-2: 0 1px 2px rgba(11, 28, 63, 0.05), 0 12px 30px rgba(11, 28, 63, 0.10);
+    --shadow-lg: 0 24px 60px rgba(11, 28, 63, 0.18);
+    --glow-blue: 0 8px 20px rgba(13, 99, 234, 0.28);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+
+body {
+    background: var(--desk);
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: 12px;
+    line-height: 1.55;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Grid blueprint sutil (1px cada 40px, casi imperceptible) */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(11, 28, 63, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(11, 28, 63, 0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+::selection { background: var(--accent); color: #fff; }
+
+/* ===== ANIMACIONES BASE ===== */
+@keyframes viewIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes modalIn {
+    from { opacity: 0; transform: scale(0.96) translateY(10px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes overlayIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+@keyframes dockUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes barGrow {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+}
+@keyframes riseIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulseDot {
+    0%, 100% { box-shadow: 0 0 0 0 var(--glow); }
+    50%      { box-shadow: 0 0 0 5px rgba(13, 99, 234, 0); }
+}
+
+/* ============================================================
+   TEMA OSCURO — se activa con <html data-theme="dark">
+   Solo redefine los tokens de color; la forma/tipografía no cambian.
+   ============================================================ */
+[data-theme="dark"] {
+    --desk: #0b0f1a;
+    --bg: #0b0f1a;
+    --surface: #131a2b;
+    --surface-2: #1a2336;
+    --surface-3: #202b42;
+
+    --ink: #f1f5fc;
+    --text: #e4e9f5;
+    --text-dim: #8a96b4;
+
+    --border: rgba(148, 163, 184, 0.12);
+    --border-strong: rgba(148, 163, 184, 0.22);
+
+    --accent: #3b82f6;
+    --accent-dim: rgba(59, 130, 246, 0.16);
+    --accent-soft: rgba(59, 130, 246, 0.16);
+    --glow: rgba(59, 130, 246, 0.40);
+
+    --ok: #34d399;   --ok-dim: rgba(52, 211, 153, 0.16);
+    --warn: #fbbf24; --warn-dim: rgba(251, 191, 36, 0.16);
+    --err: #f87171;  --err-dim: rgba(248, 113, 113, 0.16);
+    --accent-2: #34d399;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 30px rgba(0, 0, 0, 0.45);
+    --shadow-2: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 30px rgba(0, 0, 0, 0.55);
+    --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.6);
+    --glow-blue: 0 8px 20px rgba(59, 130, 246, 0.40);
+}
+
+/* La grilla blueprint se aclara sobre fondo oscuro */
+[data-theme="dark"] body::before {
+    background-image:
+        linear-gradient(rgba(148, 163, 184, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.04) 1px, transparent 1px);
+}

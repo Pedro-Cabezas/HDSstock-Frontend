@@ -1,0 +1,63 @@
+/* ============================================================
+   HDS Warehouse · tables.css
+   Tablas de datos
+   ============================================================ */
+
+/* ===== TABLAS ===== */
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 11px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-1);
+            animation: riseIn 0.4s var(--ease);
+        }
+        .data-table th {
+            text-align: left; font-weight: 600; color: var(--text-dim);
+            text-transform: uppercase; font-size: 8.5px; letter-spacing: 0.14em;
+            padding: 11px 13px;
+            border-bottom: 1px solid var(--border-strong);
+            background: rgba(11, 28, 63, 0.025);
+            position: sticky; top: 0; z-index: 2;
+            backdrop-filter: blur(8px);
+        }
+        .data-table td { padding: 10px 13px; border-bottom: 1px solid var(--border); vertical-align: middle; transition: background 0.18s; }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tbody tr { transition: background 0.18s var(--ease); }
+        .data-table tbody tr:hover td { background: rgba(13, 99, 234, 0.035); }
+
+        .ubic {
+            display: inline-block; padding: 3px 9px;
+            border: 1px solid var(--border-strong);
+            background: rgba(11, 28, 63, 0.03);
+            font-weight: 600; border-radius: 6px; font-size: 10px;
+        }
+        .cat {
+            display: inline-block; padding: 3px 10px; font-size: 9.5px;
+            color: #FFFFFF; font-weight: 700; border-radius: 999px;
+            letter-spacing: 0.02em;
+        }
+        .estante-chip {
+            display: inline-block; padding: 3px 10px; font-weight: 700;
+            color: #FFFFFF; border-radius: 6px; font-size: 10px;
+            box-shadow: 0 1px 6px rgba(11, 28, 63, 0.08);
+        }
+        .empty { text-align: center; color: var(--text-dim); padding: 42px 0; font-size: 11px; }
+
+        .accion-badge, .estado-badge {
+            display: inline-block; padding: 3px 10px; font-size: 8.5px;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            border: 1px solid; border-radius: 12px; font-weight: 600;
+        }
+        .accion-crear { color: var(--ok); border-color: rgba(22,163,90,0.28); background: var(--ok-dim); }
+        .accion-editar { color: var(--accent); border-color: rgba(13,99,234,0.28); background: var(--accent-dim); }
+        .accion-eliminar { color: var(--err); border-color: rgba(229,72,77,0.28); background: var(--err-dim); }
+        .accion-stock { color: var(--warn); border-color: rgba(232,144,42,0.30); background: var(--warn-dim); }
+        .estado-pendiente { color: var(--warn); border-color: rgba(232,144,42,0.30); background: var(--warn-dim); }
+        .estado-aprobado { color: var(--accent); border-color: rgba(13,99,234,0.28); background: var(--accent-dim); }
+        .estado-rechazado { color: var(--err); border-color: rgba(229,72,77,0.28); background: var(--err-dim); }
+        .estado-recibido { color: var(--ok); border-color: rgba(22,163,90,0.28); background: var(--ok-dim); }

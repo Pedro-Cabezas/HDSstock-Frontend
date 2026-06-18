@@ -1,0 +1,174 @@
+/* ============================================================
+   HDS Warehouse · modals.css
+   Modales y modal de productos
+   ============================================================ */
+
+/* ===== MODALES ===== */
+        .modal {
+            display: none; position: fixed; inset: 0; z-index: 1000;
+            align-items: center; justify-content: center;
+            background: rgba(3, 5, 10, 0.7);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+        .modal.active { display: flex; animation: overlayIn 0.25s ease; }
+        .modal-content {
+            width: min(420px, 90vw);
+            background: linear-gradient(160deg, var(--surface-2), var(--surface));
+            border: 1px solid var(--border-strong);
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: var(--shadow-2);
+            animation: modalIn 0.35s var(--ease);
+        }
+        .modal-content h2 {
+            font-family: var(--font-display);
+            font-size: 16px; margin-bottom: 16px; font-weight: 700;
+        }
+        .modal-label {
+            display: block; font-size: 8.5px; letter-spacing: 0.14em;
+            text-transform: uppercase; color: var(--text-dim);
+            margin-bottom: 7px; margin-top: 12px;
+        }
+        .tipo-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin: 9px 0 16px; }
+        .tipo-btn {
+            display: flex; align-items: center; gap: 8px; padding: 10px 12px;
+            border: 1px solid var(--border-strong);
+            background: rgba(11, 28, 63, 0.08);
+            color: var(--text-dim);
+            font-family: var(--font-mono); font-size: 10px; cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s var(--ease);
+        }
+        .tipo-btn:hover { border-color: var(--text-dim); color: var(--text); transform: translateY(-1px); }
+        .tipo-btn.active {
+            background: var(--accent-soft);
+            color: var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(13, 99, 234, 0.1);
+        }
+        .tipo-btn .sw { width: 11px; height: 11px; flex: 0 0 auto; border-radius: 3px; }
+        .modal-input {
+            width: 100%; padding: 11px 13px;
+            background: var(--surface-2);
+            border: 1px solid var(--border-strong);
+            color: var(--text); font-family: var(--font-ui); font-size: 12px;
+            border-radius: 13px;
+            transition: all 0.18s var(--ease);
+        }
+        .modal-input:focus {
+            outline: none; border-color: var(--accent); background: var(--surface);
+            box-shadow: 0 0 0 3px var(--accent-dim);
+        }
+        .modal-buttons { display: flex; gap: 8px; margin-top: 18px; }
+
+        /* ===== MODAL PRODUCTOS ===== */
+        .prod-content {
+            width: min(860px, 95vw);
+            max-height: 86vh;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(160deg, var(--surface-2), var(--surface));
+            border: 1px solid var(--border-strong);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: var(--shadow-2);
+            animation: modalIn 0.35s var(--ease);
+        }
+        .prod-head {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(11, 28, 63, 0.02);
+        }
+        .prod-head .t { display: flex; align-items: center; gap: 12px; }
+        .prod-chip {
+            width: 36px; height: 36px; display: grid; place-items: center;
+            border-radius: var(--radius-sm); font-weight: 700; font-size: 14px;
+            color: #FFFFFF; box-shadow: 0 2px 10px rgba(11, 28, 63, 0.08);
+        }
+        .prod-head .meta b { font-size: 14px; font-family: var(--font-display); }
+        .prod-head .meta span { display: block; font-size: 9px; color: var(--text-dim); }
+        .prod-head .x { width: auto; padding: 7px 12px; }
+        .prod-body { padding: 18px 20px; overflow-y: auto; }
+        .prod-toolbar {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 14px; gap: 9px; flex-wrap: wrap;
+        }
+        .prod-toolbar .count { font-size: 11px; color: var(--text-dim); }
+        .prod-toolbar button { width: auto; }
+
+        .bulk-bar {
+            display: none; align-items: center; gap: 10px;
+            padding: 10px 14px;
+            background: var(--accent-soft);
+            border: 1px solid rgba(13, 99, 234, 0.35);
+            border-radius: var(--radius-sm);
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            animation: riseIn 0.25s var(--ease);
+        }
+        .bulk-bar.visible { display: flex; }
+        .bulk-bar .sel-count { font-size: 10px; color: var(--accent); font-weight: 700; }
+        .bulk-bar input {
+            width: 85px; padding: 6px 9px;
+            background: rgba(11, 28, 63, 0.08);
+            border: 1px solid var(--border-strong);
+            color: var(--text); font-family: var(--font-mono); font-size: 11px;
+            border-radius: 6px;
+        }
+        .bulk-bar input:focus { outline: none; border-color: var(--accent); }
+        .bulk-bar button { width: auto; padding: 6px 12px; font-size: 9px; }
+
+        .prod-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        .prod-table th {
+            text-align: left; font-weight: 600; color: var(--text-dim);
+            text-transform: uppercase; font-size: 8.5px; letter-spacing: 0.14em;
+            padding: 8px 10px; border-bottom: 1px solid var(--border-strong);
+        }
+        .prod-table td { padding: 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        .prod-table tr:last-child td { border-bottom: none; }
+        .prod-table tbody tr { transition: background 0.18s var(--ease); }
+        .prod-table tbody tr:hover td { background: rgba(13, 99, 234, 0.035); }
+
+        .stock { display: inline-flex; align-items: center; gap: 7px; }
+        .stock button {
+            width: 25px; height: 25px; padding: 0;
+            display: grid; place-items: center; font-size: 14px;
+            border-radius: 7px;
+        }
+        .stock .n { min-width: 34px; text-align: center; font-weight: 700; font-size: 12px; }
+        .stock input.qty-input {
+            width: 62px; padding: 5px 7px;
+            background: rgba(11, 28, 63, 0.08);
+            border: 1px solid var(--border-strong);
+            color: var(--text); font-family: var(--font-mono);
+            font-size: 12px; font-weight: 700; text-align: center;
+            border-radius: 7px;
+            transition: all 0.2s var(--ease);
+        }
+        .stock input.qty-input:focus {
+            outline: none; border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-dim);
+        }
+        .desc { color: var(--text-dim); max-width: 210px; }
+
+        .prod-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .prod-form .full { grid-column: 1 / -1; }
+        .prod-form label {
+            display: block; font-size: 8.5px; text-transform: uppercase;
+            letter-spacing: 0.14em; color: var(--text-dim); margin-bottom: 5px;
+        }
+        .prod-form input, .prod-form textarea, .prod-form select {
+            width: 100%; padding: 10px 12px;
+            background: var(--surface-2);
+            border: 1px solid var(--border-strong);
+            color: var(--text); font-family: var(--font-ui); font-size: 12px;
+            border-radius: 13px;
+            transition: all 0.18s var(--ease);
+        }
+        .prod-form textarea { resize: vertical; min-height: 60px; }
+        .prod-form input:focus, .prod-form textarea:focus, .prod-form select:focus {
+            outline: none; border-color: var(--accent); background: var(--surface);
+            box-shadow: 0 0 0 3px var(--accent-dim);
+        }
