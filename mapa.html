@@ -6,11 +6,11 @@
     <title>HDS · Warehouse</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&family=Barlow+Condensed:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/variables.css">
-<link rel="stylesheet" href="css/layout.css">
-<link rel="stylesheet" href="css/tables.css">
-<link rel="stylesheet" href="css/dashboard.css">
-<link rel="stylesheet" href="css/modals.css">
-<link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/tables.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/modals.css">
+    <link rel="stylesheet" href="css/components.css">
 </head>
 <body>
 
@@ -28,7 +28,6 @@
     </div>
 </header>
 
-<!-- ============ VISTA: MAPA ============ -->
 <div class="view active" id="view-mapa">
     <section class="stage">
         <canvas id="canvas"></canvas>
@@ -50,7 +49,6 @@
     </aside>
 </div>
 
-<!-- ============ VISTA: STOCK ============ -->
 <div class="view" id="view-stock">
     <div class="page">
         <h2>Gestión de Stock</h2>
@@ -74,7 +72,6 @@
     </div>
 </div>
 
-<!-- ============ VISTA: PEDIDOS ============ -->
 <div class="view" id="view-pedidos">
     <div class="page">
         <h2>Pedidos y Necesidades</h2>
@@ -120,7 +117,6 @@
     </div>
 </div>
 
-<!-- ============ VISTA: DASHBOARD ============ -->
 <div class="view" id="view-dashboard">
     <div class="page">
         <h2>Dashboard de Análisis</h2>
@@ -161,7 +157,6 @@
     </div>
 </div>
 
-<!-- ============ VISTA: MOVIMIENTOS ============ -->
 <div class="view" id="view-movimientos">
     <div class="page">
         <h2>Movimientos</h2>
@@ -190,7 +185,6 @@
     </div>
 </div>
 
-<!-- ============ VISTA: USUARIOS ============ -->
 <div class="view" id="view-usuarios">
     <div class="page">
         <h2>Gestión de Usuarios</h2>
@@ -208,7 +202,6 @@
     </div>
 </div>
 
-<!-- ============ VISTA: PRODUCTO INDIVIDUAL ============ -->
 <div class="view" id="view-producto">
     <div class="page">
         <div class="prod-detail-back">
@@ -218,7 +211,6 @@
     </div>
 </div>
 
-<!-- ============ NAVBAR ============ -->
 <nav class="taskbar">
     <button data-view="mapa" class="active">🗺 Mapa</button>
     <button data-view="stock">📦 Stock</button>
@@ -229,7 +221,6 @@
     <button data-view="producto" id="navProducto">🔍 Producto</button>
 </nav>
 
-<!-- ============ MODAL: CAMBIO DE CANTIDAD ============ -->
 <div class="modal" id="cantidadModal">
     <div class="modal-content">
         <h2 id="cantModalTitle">Cambiar cantidad</h2>
@@ -244,7 +235,6 @@
     </div>
 </div>
 
-<!-- ============ MODALES ============ -->
 <div class="modal" id="agregarModal">
     <div class="modal-content">
         <h2>Agregar elemento</h2>
@@ -266,30 +256,26 @@
     </div>
 </div>
 
-<!-- Supabase (UMD, expone window.supabase) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- Núcleo -->
-<script src="js/core/constants.js"></script>
-<script src="js/core/utils.js"></script>
-<script src="js/core/theme.js"></script>
-<script src="js/core/ui.js"></script>
-<script src="js/core/state.js"></script>
-<script src="js/core/api.js"></script>
-<script src="js/core/auth.js"></script>
+<script src="./core/constants.js"></script>
+<script src="./core/utils.js"></script>
+<script src="./core/theme.js"></script>
+<script src="./core/ui.js"></script>
+<script src="./core/state.js"></script>
+<script src="./core/api.js"></script>
+<script src="./core/auth.js"></script>
 
-<!-- Vistas -->
-<script src="js/views/mapa.js"></script>
-<script src="js/views/productos.js"></script>
-<script src="js/views/detalle.js"></script>
-<script src="js/views/stock.js"></script>
-<script src="js/views/pedidos.js"></script>
-<script src="js/views/dashboard.js"></script>
-<script src="js/views/movimientos.js"></script>
-<script src="js/views/usuarios.js"></script>
+<script src="./views/mapa.js"></script>
+<script src="./views/productos.js"></script>
+<script src="./views/detalle.js"></script>
+<script src="./views/stock.js"></script>
+<script src="./views/pedidos.js"></script>
+<script src="./views/dashboard.js"></script>
+<script src="./views/movimientos.js"></script>
+<script src="./views/usuarios.js"></script>
 
-<!-- Orquestador (último) -->
-<script src="js/app.js"></script>
+<script src="./app.js"></script>
 
 </body>
 </html>
