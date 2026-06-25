@@ -64,7 +64,11 @@
 
       await Api.perfiles.marcarLogin(perfil.id);
       UI.showMessage(msg, '✓ Bienvenido!', 'ok');
-      setTimeout(() => location.replace(ROUTES.app), 600);
+      setTimeout(() => {
+        const redirect = sessionStorage.getItem('hds_redirect');
+        sessionStorage.removeItem('hds_redirect');
+        location.replace(redirect || ROUTES.app);
+      }, 600);
     } catch (err) {
       UI.showMessage(msg, err.message, 'err');
       UI.setButtonLoading(btn, false);

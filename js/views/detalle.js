@@ -68,14 +68,16 @@ const Detalle = (() => {
     const cont = $('prodDetailContent');
     UI.showLoader(cont, 'Cargando producto…');
     const id = Store.get('productoDetalleId');
-    if (!id || !Store.get('online')) {
+    if (!id) {
       cont.innerHTML = UI.emptyState('No se pudo cargar el producto.');
       return;
     }
     try {
       const { data, error } = await Api.productos.detalle(id);
       if (error) throw error;
+      if (!data) throw new Error('Producto no encontrado');
       Store.set('productoDetalleData', data);
+      Store.set('online', true); // confirma conectividad
     } catch (e) {
       cont.innerHTML = UI.emptyState('Error: ' + e.message);
       return;
@@ -175,9 +177,11 @@ const Detalle = (() => {
             <div class="pd-qr-box">
               <img src="${urlQR(p.id, 150)}" alt="QR" width="150" height="150" loading="lazy">
             </div>
-            ${p.codigo ? `<div class="pd-qr-code">${esc(p.codigo)}</div>` : ''}
-            <div class="pd-qr-note">Escaneá para abrir este producto</div>
-            <button class="pd-qr-print" id="pdQrPrint">🖨 Imprimir etiqueta</button>
+            <div class="pd-qr-meta-wrap">
+              ${p.codigo ? `<div class="pd-qr-code">${esc(p.codigo)}</div>` : ''}
+              <div class="pd-qr-note">Escaneá para abrir este producto</div>
+              <button class="pd-qr-print" id="pdQrPrint">🖨 Imprimir etiqueta</button>
+            </div>
           </div>
         </div>
 

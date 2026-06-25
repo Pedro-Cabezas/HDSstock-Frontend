@@ -29,6 +29,8 @@ const Auth = {
   async requireSession() {
     const user = await Auth.cargarSesion();
     if (!user || user.estado !== 'activo') {
+      // Guardar URL actual para restaurarla después del login (ej: QR con ?producto=ID)
+      if (location.search) sessionStorage.setItem('hds_redirect', location.href);
       location.replace(ROUTES.login);
       return null;
     }
