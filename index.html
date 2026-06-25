@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>HDS · Acceso</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&family=Barlow+Condensed:wght@500;600&display=swap" rel="stylesheet">
     <style>
@@ -211,9 +211,158 @@
             letter-spacing: 0.1em;
             font-weight: 600;
         }
+    
+        /* ===== RESPONSIVE — celular ===== */
+        /* ===== SPLASH DE BIENVENIDA ===== */
+        .splash {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #FFFFFF 0%, #F3F5F9 100%);
+            z-index: 999;
+            animation: splashFadeIn 0.5s var(--ease);
+        }
+        .splash.closing { animation: splashLiftOut 0.8s var(--ease) forwards; }
+
+        .splash-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 28px;
+            width: 100%;
+            max-width: 420px;
+            padding: 60px 40px;
+            background: #FFFFFF;
+            border: 1px solid rgba(11, 28, 63, 0.08);
+            border-radius: 24px;
+            box-shadow: 0 30px 80px rgba(11, 28, 63, 0.12), 0 2px 8px rgba(11, 28, 63, 0.06);
+            animation: splashCardIn 0.7s var(--ease) 0.1s backwards;
+        }
+
+        .splash-logo {
+            width: 140px;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: drop-shadow(0 8px 20px rgba(13, 99, 234, 0.15));
+            animation: splashLogoSpin 4s linear infinite;
+        }
+        .splash-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .splash-title {
+            font-family: var(--font-display);
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: 0.3em;
+            color: var(--ink);
+            line-height: 1;
+            margin: 0;
+        }
+
+        .splash-subtitle {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.32em;
+            color: var(--text-dim);
+            margin: 0;
+        }
+
+        .splash-progress {
+            width: 100%;
+            height: 3px;
+            background: rgba(11, 28, 63, 0.08);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        .splash-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent));
+            border-radius: 999px;
+            animation: splashProgress 2.4s ease-in-out infinite;
+        }
+
+        .splash-hint {
+            font-size: 10px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin: 0;
+            opacity: 0;
+            animation: splashHintFade 0.8s var(--ease) 1.2s forwards;
+        }
+
+        /* ===== ANIMACIONES ===== */
+        @keyframes splashFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes splashCardIn {
+            from { opacity: 0; transform: scale(0.94) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes splashLogoSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes splashProgress {
+            0% { width: 0%; }
+            50% { width: 100%; }
+            100% { width: 0%; }
+        }
+        @keyframes splashHintFade {
+            from { opacity: 0; }
+            to { opacity: 0.8; }
+        }
+        @keyframes splashLiftOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-100vh);
+            }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 640px) {
+            body { padding: 16px; }
+            .card { padding: 24px 20px; border-radius: 16px; }
+            .logo { margin-bottom: 22px; }
+            .logo h1 { font-size: 28px; }
+            .tab-btn { font-size: 13px; padding: 9px; }
+            input, .input { font-size: 16px !important; }   /* evita zoom iOS */
+
+            .splash-card { padding: 36px 24px; gap: 20px; }
+            .splash-logo { width: 70px; height: 70px; }
+            .splash-title { font-size: 28px; }
+        }
     </style>
 </head>
 <body>
+
+<!-- ============ SPLASH DE BIENVENIDA ============ -->
+<div class="splash" id="splash">
+    <div class="splash-card">
+        <div class="splash-logo">
+            <img src="assets/logo-hds.png" alt="HDS Logo">
+        </div>
+        <h1 class="splash-title">HDS</h1>
+        <p class="splash-subtitle">Warehouse System</p>
+        <div class="splash-progress">
+            <div class="splash-progress-bar"></div>
+        </div>
+        <p class="splash-hint">Toca para continuar</p>
+    </div>
+</div>
 
 <div class="container">
     <div class="card">
@@ -269,18 +418,38 @@
     </div>
 </div>
 
+<!-- Script de Splash -->
+<script>
+    (() => {
+        const splash = document.getElementById('splash');
+        if (!splash) return;
+
+        const closeSplash = () => {
+            splash.classList.add('closing');
+            setTimeout(() => splash.remove(), 800);
+        };
+
+        // Click o tap para cerrar
+        splash.addEventListener('click', closeSplash);
+        splash.addEventListener('touchstart', closeSplash);
+
+        // Auto-cerrar después de 3.5 segundos
+        setTimeout(closeSplash, 3500);
+    })();
+</script>
+
 <!-- Supabase (UMD, expone window.supabase) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <!-- Núcleo (orden importa) -->
-<script src="./core/constants.js"></script>
-<script src="./core/utils.js"></script>
-<script src="./core/theme.js"></script>
-<script src="./core/ui.js"></script>
-<script src="./core/state.js"></script>
-<script src="./core/api.js"></script>
-<script src="./core/auth.js"></script>
-<script src="./login.js"></script>
+<script src="js/core/constants.js"></script>
+<script src="js/core/utils.js"></script>
+<script src="js/core/theme.js"></script>
+<script src="js/core/ui.js"></script>
+<script src="js/core/state.js"></script>
+<script src="js/core/api.js"></script>
+<script src="js/core/auth.js"></script>
+<script src="js/login.js"></script>
 
 </body>
 </html>

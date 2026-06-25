@@ -61,3 +61,19 @@
         .estado-aprobado { color: var(--accent); border-color: rgba(13,99,234,0.28); background: var(--accent-dim); }
         .estado-rechazado { color: var(--err); border-color: rgba(229,72,77,0.28); background: var(--err-dim); }
         .estado-recibido { color: var(--ok); border-color: rgba(22,163,90,0.28); background: var(--ok-dim); }
+
+/* ── Mobile tables ── */
+@media (max-width: 640px) {
+    .data-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        font-size: 10.5px;
+    }
+    .data-table thead { display: table; width: 100%; min-width: 460px; }
+    .data-table tbody { display: block; min-width: 460px; }
+    .data-table tr { display: table; width: 100%; }
+    .data-table th { padding: 9px 10px; font-size: 7.5px; letter-spacing: 0.1em; }
+    .data-table td { padding: 9px 10px; }
+    .desc { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
