@@ -657,6 +657,7 @@
 
     /* Mapa sidebar → bottom sheet */
     #view-mapa { flex-direction: column; }
+    .stage { flex: 1; min-height: 0; }
     .sidebar {
         width: 100%;
         border-left: none;
@@ -664,9 +665,12 @@
         border-radius: 20px 20px 0 0;
         max-height: 0;
         overflow: hidden;
-        transition: max-height 0.3s var(--ease, ease);
+        transition: max-height 0.35s var(--ease, ease);
+        position: relative;
+        z-index: 80;
+        flex-shrink: 0;
     }
-    .sidebar:has(.info-panel.active) { max-height: 50vh; overflow-y: auto; }
+    .sidebar.open { max-height: 50vh; overflow-y: auto; }
     .tools { flex-direction: row; flex-wrap: wrap; }
     .tools button { flex: 1; min-width: 80px; }
 
