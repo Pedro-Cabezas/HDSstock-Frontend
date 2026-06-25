@@ -2,23 +2,29 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>HDS · Warehouse</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&family=Barlow+Condensed:wght@500;600&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="./css/variables.css">
-    <link rel="stylesheet" href="./css/layout.css">
-    <link rel="stylesheet" href="./css/tables.css">
-    <link rel="stylesheet" href="./css/dashboard.css">
-    <link rel="stylesheet" href="./css/modals.css">
-    <link rel="stylesheet" href="./css/components.css">
+    <link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/tables.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/modals.css">
+<link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
 
 <header>
-    <div class="brand-text">
-        <span class="name">HDS</span>
-        <span class="sub">Warehouse</span>
+    <div class="header-left">
+        <button class="btn-back" id="btnInicio" style="display:none">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12L6 8l4-4"/></svg>
+            Inicio
+        </button>
+        <div class="brand-text">
+            <span class="name">HDS</span>
+            <span class="sub">Warehouse</span>
+        </div>
     </div>
     <div class="header-user">
         <span class="uname">👤 <strong id="usuarioNombre">Usuario</strong></span>
@@ -29,9 +35,59 @@
     </div>
 </header>
 
-<div class="view active" id="view-mapa">
+<!-- ============ VISTA: HOME ============ -->
+<div class="view active" id="view-home">
+    <div class="home-page">
+        <div class="home-brand">
+            <div class="home-logo-wordmark">HDS</div>
+            <div class="home-logo-caption">Seleccioná tu área de trabajo</div>
+        </div>
+        <div class="home-island">
+            <button class="unit-card" data-nave="1">
+                <span class="unit-card-icon">
+                    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 20L24 6L44 20V44H4V20Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+                        <rect x="18" y="28" width="12" height="16" rx="1.5" stroke="currentColor" stroke-width="2"/>
+                        <line x1="4" y1="20" x2="44" y2="20" stroke="currentColor" stroke-width="2"/>
+                        <line x1="10" y1="28" x2="10" y2="36" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <line x1="10" y1="38" x2="10" y2="42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <line x1="38" y1="28" x2="38" y2="36" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <line x1="38" y1="38" x2="38" y2="42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <span class="unit-card-num">01</span>
+                <span class="unit-card-label">Nave 1</span>
+            </button>
+            <div class="unit-divider"></div>
+            <button class="unit-card" data-nave="2">
+                <span class="unit-card-icon">
+                    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="2" y="18" width="44" height="26" rx="2" stroke="currentColor" stroke-width="2.5"/>
+                        <path d="M2 22L24 10L46 22" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="16" y1="18" x2="16" y2="44" stroke="currentColor" stroke-width="2"/>
+                        <line x1="32" y1="18" x2="32" y2="44" stroke="currentColor" stroke-width="2"/>
+                        <rect x="19" y="30" width="10" height="14" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                </span>
+                <span class="unit-card-num">02</span>
+                <span class="unit-card-label">Nave 2</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ============ VISTA: MAPA ============ -->
+<div class="view" id="view-mapa">
     <section class="stage">
         <canvas id="canvas"></canvas>
+        <div class="mapa-search" id="mapaSearch">
+            <div class="mapa-search-bar">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="5"/><line x1="13" y1="13" x2="17" y2="17"/></svg>
+                <input type="text" id="mapaSearchInput" placeholder="Buscar estante o producto… (Ctrl+K)" autocomplete="off" spellcheck="false">
+                <kbd class="search-kbd" id="mapaSearchKbd">Ctrl K</kbd>
+            </div>
+            <ul class="mapa-search-results" id="mapaSearchResults"></ul>
+        </div>
     </section>
     <aside class="sidebar">
         <div class="panel">
@@ -50,6 +106,7 @@
     </aside>
 </div>
 
+<!-- ============ VISTA: STOCK ============ -->
 <div class="view" id="view-stock">
     <div class="page">
         <h2>Gestión de Stock</h2>
@@ -73,6 +130,7 @@
     </div>
 </div>
 
+<!-- ============ VISTA: PEDIDOS ============ -->
 <div class="view" id="view-pedidos">
     <div class="page">
         <h2>Pedidos y Necesidades</h2>
@@ -118,6 +176,7 @@
     </div>
 </div>
 
+<!-- ============ VISTA: DASHBOARD ============ -->
 <div class="view" id="view-dashboard">
     <div class="page">
         <h2>Dashboard de Análisis</h2>
@@ -158,11 +217,16 @@
     </div>
 </div>
 
+<!-- ============ VISTA: MOVIMIENTOS ============ -->
 <div class="view" id="view-movimientos">
     <div class="page">
         <h2>Movimientos</h2>
         <div class="subtitle">Historial de cambios y actualizaciones de productos</div>
         <div class="page-toolbar">
+            <div class="search-wrap">
+                <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="5"/><line x1="13" y1="13" x2="17" y2="17"/></svg>
+                <input type="text" id="movSearch" class="search-input" placeholder="Buscar movimiento…">
+            </div>
             <select id="movAccionFilter">
                 <option value="">Todas las acciones</option>
                 <option value="crear">Crear</option>
@@ -186,10 +250,33 @@
     </div>
 </div>
 
+<!-- ============ VISTA: USUARIOS ============ -->
 <div class="view" id="view-usuarios">
     <div class="page">
         <h2>Gestión de Usuarios</h2>
         <div class="subtitle">Aprobación de cuentas, cambio de roles y eliminación</div>
+
+        <!-- Filtros -->
+        <div class="page-toolbar">
+            <div class="search-wrap">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input type="text" id="usuariosSearch" class="search-input" placeholder="Buscar por nombre o email…" style="width:240px">
+            </div>
+            <select id="usuariosEstadoFilter">
+                <option value="">Todos los usuarios</option>
+                <option value="pendiente">Pendientes</option>
+                <option value="activo">Activos</option>
+            </select>
+            <select id="usuariosRolFilter">
+                <option value="">Todos los roles</option>
+                <option value="operario">Operario</option>
+                <option value="supervisor">Supervisor</option>
+                <option value="admin">Admin</option>
+            </select>
+        </div>
+
         <div class="users-grid">
             <div>
                 <div class="section-label pend">⏳ Pendientes de aprobación (<span id="pendingCount">0</span>)</div>
@@ -203,6 +290,7 @@
     </div>
 </div>
 
+<!-- ============ VISTA: PRODUCTO INDIVIDUAL ============ -->
 <div class="view" id="view-producto">
     <div class="page">
         <div class="prod-detail-back">
@@ -212,16 +300,19 @@
     </div>
 </div>
 
-<nav class="taskbar">
+<!-- ============ NAVBAR ============ -->
+<button class="dock-toggle" id="dockToggle" aria-label="Menú" aria-expanded="false">☰</button>
+<nav class="taskbar" id="taskbar">
     <button data-view="mapa" class="active">🗺 Mapa</button>
     <button data-view="stock">📦 Stock</button>
-    <button data-view="pedidos">📋 Pedidos</button>
+    <button data-view="pedidos">📋 Pedidos <span class="dock-badge" id="pedidosBadge" style="display:none"></span></button>
     <button data-view="dashboard">📊 Dashboard</button>
     <button data-view="movimientos">🔄 Movimientos</button>
     <button data-view="usuarios">👥 Usuarios</button>
     <button data-view="producto" id="navProducto">🔍 Producto</button>
 </nav>
 
+<!-- ============ MODAL: CAMBIO DE CANTIDAD ============ -->
 <div class="modal" id="cantidadModal">
     <div class="modal-content">
         <h2 id="cantModalTitle">Cambiar cantidad</h2>
@@ -236,6 +327,7 @@
     </div>
 </div>
 
+<!-- ============ MODALES ============ -->
 <div class="modal" id="agregarModal">
     <div class="modal-content">
         <h2>Agregar elemento</h2>
@@ -257,26 +349,30 @@
     </div>
 </div>
 
+<!-- Supabase (UMD, expone window.supabase) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script src="./core/constants.js"></script>
-<script src="./core/utils.js"></script>
-<script src="./core/theme.js"></script>
-<script src="./core/ui.js"></script>
-<script src="./core/state.js"></script>
-<script src="./core/api.js"></script>
-<script src="./core/auth.js"></script>
+<!-- Núcleo -->
+<script src="js/core/constants.js"></script>
+<script src="js/core/utils.js"></script>
+<script src="js/core/theme.js"></script>
+<script src="js/core/ui.js"></script>
+<script src="js/core/state.js"></script>
+<script src="js/core/api.js"></script>
+<script src="js/core/auth.js"></script>
 
-<script src="./views/mapa.js"></script>
-<script src="./views/productos.js"></script>
-<script src="./views/detalle.js"></script>
-<script src="./views/stock.js"></script>
-<script src="./views/pedidos.js"></script>
-<script src="./views/dashboard.js"></script>
-<script src="./views/movimientos.js"></script>
-<script src="./views/usuarios.js"></script>
+<!-- Vistas -->
+<script src="js/views/mapa.js"></script>
+<script src="js/views/productos.js"></script>
+<script src="js/views/detalle.js"></script>
+<script src="js/views/stock.js"></script>
+<script src="js/views/pedidos.js"></script>
+<script src="js/views/dashboard.js"></script>
+<script src="js/views/movimientos.js"></script>
+<script src="js/views/usuarios.js"></script>
 
-<script src="./app.js"></script>
+<!-- Orquestador (último) -->
+<script src="js/app.js"></script>
 
 </body>
 </html>
