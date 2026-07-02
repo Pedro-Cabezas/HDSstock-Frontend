@@ -15,6 +15,20 @@ const Movimientos = (() => {
       const estantesNaveActual = Store.get('estantes').map((e) => e.nombre);
       const movFiltrados = (data || []).filter((m) => estantesNaveActual.includes(m.estante_nombre));
       Store.set('movData', movFiltrados);
+
+      // Poblar filtros de usuario y estante con los valores presentes
+      const usuarios = [...new Set(movFiltrados.map((m) => m.usuario_nombre).filter(Boolean))].sort();
+      const uSel = $('movUsuarioFilter'), uVal = uSel.value;
+      uSel.innerHTML = '<option value="">Todos los usuarios</option>' +
+        usuarios.map((u) => `<option value="${esc(u)}">${esc(u)}</option>`).join('');
+      uSel.value = uVal;
+
+      const estantes = [...new Set(movFiltrados.map((m) => m.estante_nombre).filter(Boolean))].sort();
+      const eSel = $('movEstanteFilter'), eVal = eSel.value;
+      eSel.innerHTML = '<option value="">Todos los estantes</option>' +
+        estantes.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+      eSel.value = eVal;
+
       render();
     } catch (e) {
       body.innerHTML = UI.emptyRow(7, 'Error: ' + e.message + ' · ¿Creaste la tabla "movimientos"?');
@@ -27,11 +41,23 @@ const Movimientos = (() => {
 
   const render = () => {
     const filtro = $('movAccionFilter').value;
+    const usuario = $('movUsuarioFilter').value;
+    const estante = $('movEstanteFilter').value;
+    const periodo = $('movFechaFilter').value;
     const busqueda = $('movSearch').value.trim().toLowerCase();
     const body = $('movBody');
+
+    // Límite inferior de fecha según el período elegido
+    let desde = null;
+    if (periodo === 'hoy') { desde = new Date(); desde.setHours(0, 0, 0, 0); }
+    else if (periodo) { desde = new Date(Date.now() - parseInt(periodo) * 86400000); }
+
     const filtrados = Store.get('movData').filter((m) => {
       if (filtro && filtro !== 'stock' && m.accion !== filtro) return false;
       if (filtro === 'stock' && m.accion !== 'stock+' && m.accion !== 'stock-') return false;
+      if (usuario && m.usuario_nombre !== usuario) return false;
+      if (estante && m.estante_nombre !== estante) return false;
+      if (desde && new Date(m.fecha) < desde) return false;
       if (busqueda) {
         const haystack = [m.usuario_nombre, m.producto_nombre, m.estante_nombre, m.accion, m.detalle]
           .map((v) => (v || '').toLowerCase()).join(' ');
@@ -62,6 +88,9 @@ const Movimientos = (() => {
 
   const init = () => {
     $('movAccionFilter').addEventListener('change', render);
+    $('movUsuarioFilter').addEventListener('change', render);
+    $('movEstanteFilter').addEventListener('change', render);
+    $('movFechaFilter').addEventListener('change', render);
     $('movRefresh').addEventListener('click', cargar);
     $('movSearch').addEventListener('input', render);
   };

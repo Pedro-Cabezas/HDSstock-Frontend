@@ -70,7 +70,7 @@ const Mapa = (() => {
     ctx.translate(t.offsetX, t.offsetY);
     ctx.scale(t.scale, t.scale);
 
-    const W = PLANO.wall;
+    const W = wallNave(Store.get('naveActual') || 1);
     const dark = document.documentElement.getAttribute('data-theme') === 'dark';
     const floorFill = dark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(255, 255, 255, 0.75)';
     const gridDot = dark ? 'rgba(148, 163, 184, 0.10)' : 'rgba(11, 28, 63, 0.07)';
@@ -97,50 +97,54 @@ const Mapa = (() => {
     ctx.strokeStyle = inkRGBA(0.07); ctx.lineWidth = 7;
     ctx.strokeRect(W.x - 3, W.y - 3, W.w + 6, W.h + 6);
 
-    // Puerta (el trazo "borra" la pared con el color del piso)
-    ctx.strokeStyle = dark ? '#0b0f1a' : '#FFFFFF'; ctx.lineWidth = 9;
-    ctx.beginPath(); ctx.moveTo(PLANO.door.x1, W.y); ctx.lineTo(PLANO.door.x2, W.y); ctx.stroke();
-    ctx.strokeStyle = 'rgba(13, 99, 234, 0.75)'; ctx.lineWidth = 2; ctx.setLineDash([6, 5]);
-    ctx.beginPath(); ctx.moveTo(PLANO.door.x1, W.y); ctx.lineTo(PLANO.door.x2, W.y); ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle = 'rgba(13, 99, 234, 0.70)';
-    ctx.font = '600 9px "Barlow Condensed"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('ENTRADA', (PLANO.door.x1 + PLANO.door.x2) / 2, W.y - 12);
+    // Referencias del plano (entrada, escalera, zona de carga):
+    // solo existen en la Nave 1. La Nave 2 es un galpón cuadrado limpio.
+    if ((Store.get('naveActual') || 1) === 1) {
+      // Puerta (el trazo "borra" la pared con el color del piso)
+      ctx.strokeStyle = dark ? '#0b0f1a' : '#FFFFFF'; ctx.lineWidth = 9;
+      ctx.beginPath(); ctx.moveTo(PLANO.door.x1, W.y); ctx.lineTo(PLANO.door.x2, W.y); ctx.stroke();
+      ctx.strokeStyle = 'rgba(13, 99, 234, 0.75)'; ctx.lineWidth = 2; ctx.setLineDash([6, 5]);
+      ctx.beginPath(); ctx.moveTo(PLANO.door.x1, W.y); ctx.lineTo(PLANO.door.x2, W.y); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = 'rgba(13, 99, 234, 0.70)';
+      ctx.font = '600 9px "Barlow Condensed"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('ENTRADA', (PLANO.door.x1 + PLANO.door.x2) / 2, W.y - 12);
 
-    // Escalera
-    const R = PLANO.room;
-    ctx.fillStyle = inkRGBA(0.04); ctx.fillRect(R.x, R.y, R.w, R.h);
-    ctx.strokeStyle = inkRGBA(0.20); ctx.lineWidth = 1; ctx.strokeRect(R.x, R.y, R.w, R.h);
-    ctx.strokeStyle = inkRGBA(0.12); ctx.lineWidth = 1;
-    for (let py = R.y + 14; py < R.y + R.h - 6; py += 14) {
-      ctx.beginPath(); ctx.moveTo(R.x + 10, py); ctx.lineTo(R.x + R.w - 10, py); ctx.stroke();
-    }
-    ctx.save();
-    ctx.translate(R.x + 26, R.y + R.h / 2); ctx.rotate(-Math.PI / 2);
-    ctx.fillStyle = inkRGBA(0.50);
-    ctx.font = '600 11px "Barlow Condensed"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('ESCALERA', 0, 0);
-    ctx.restore();
+      // Escalera
+      const R = PLANO.room;
+      ctx.fillStyle = inkRGBA(0.04); ctx.fillRect(R.x, R.y, R.w, R.h);
+      ctx.strokeStyle = inkRGBA(0.20); ctx.lineWidth = 1; ctx.strokeRect(R.x, R.y, R.w, R.h);
+      ctx.strokeStyle = inkRGBA(0.12); ctx.lineWidth = 1;
+      for (let py = R.y + 14; py < R.y + R.h - 6; py += 14) {
+        ctx.beginPath(); ctx.moveTo(R.x + 10, py); ctx.lineTo(R.x + R.w - 10, py); ctx.stroke();
+      }
+      ctx.save();
+      ctx.translate(R.x + 26, R.y + R.h / 2); ctx.rotate(-Math.PI / 2);
+      ctx.fillStyle = inkRGBA(0.50);
+      ctx.font = '600 11px "Barlow Condensed"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('ESCALERA', 0, 0);
+      ctx.restore();
 
-    // Zona de carga
-    const C = PLANO.camion;
-    ctx.save();
-    ctx.beginPath(); ctx.rect(C.x, C.y, C.w, C.h); ctx.clip();
-    ctx.fillStyle = 'rgba(13, 99, 234, 0.05)'; ctx.fillRect(C.x, C.y, C.w, C.h);
-    ctx.strokeStyle = 'rgba(13, 99, 234, 0.10)'; ctx.lineWidth = 5;
-    for (let d = -C.h; d < C.w + C.h; d += 16) {
-      ctx.beginPath(); ctx.moveTo(C.x + d, C.y + C.h); ctx.lineTo(C.x + d + C.h, C.y); ctx.stroke();
+      // Zona de carga
+      const C = PLANO.camion;
+      ctx.save();
+      ctx.beginPath(); ctx.rect(C.x, C.y, C.w, C.h); ctx.clip();
+      ctx.fillStyle = 'rgba(13, 99, 234, 0.05)'; ctx.fillRect(C.x, C.y, C.w, C.h);
+      ctx.strokeStyle = 'rgba(13, 99, 234, 0.10)'; ctx.lineWidth = 5;
+      for (let d = -C.h; d < C.w + C.h; d += 16) {
+        ctx.beginPath(); ctx.moveTo(C.x + d, C.y + C.h); ctx.lineTo(C.x + d + C.h, C.y); ctx.stroke();
+      }
+      ctx.restore();
+      ctx.setLineDash([7, 5]); ctx.strokeStyle = 'rgba(13, 99, 234, 0.55)'; ctx.lineWidth = 1.5;
+      ctx.strokeRect(C.x, C.y, C.w, C.h); ctx.setLineDash([]);
+      ctx.font = '600 10px "Barlow Condensed"';
+      const zcText = 'ZONA DE CARGA';
+      const zcW = ctx.measureText(zcText).width;
+      ctx.fillStyle = 'rgba(13, 99, 234, 0.90)';
+      roundedPath(ctx, C.x + C.w / 2 - zcW / 2 - 8, C.y + C.h / 2 - 9, zcW + 16, 18, 9); ctx.fill();
+      ctx.fillStyle = '#FFFFFF'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(zcText, C.x + C.w / 2, C.y + C.h / 2);
     }
-    ctx.restore();
-    ctx.setLineDash([7, 5]); ctx.strokeStyle = 'rgba(13, 99, 234, 0.55)'; ctx.lineWidth = 1.5;
-    ctx.strokeRect(C.x, C.y, C.w, C.h); ctx.setLineDash([]);
-    ctx.font = '600 10px "Barlow Condensed"';
-    const zcText = 'ZONA DE CARGA';
-    const zcW = ctx.measureText(zcText).width;
-    ctx.fillStyle = 'rgba(13, 99, 234, 0.90)';
-    roundedPath(ctx, C.x + C.w / 2 - zcW / 2 - 8, C.y + C.h / 2 - 9, zcW + 16, 18, 9); ctx.fill();
-    ctx.fillStyle = '#FFFFFF'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(zcText, C.x + C.w / 2, C.y + C.h / 2);
 
     // Estantes
     const selectedId = Store.get('selectedId');
@@ -258,8 +262,20 @@ const Mapa = (() => {
     draw();
   };
 
-  // Llamado al entrar en la pestaña: siempre empieza centrado y ajustado
-  const entrar = () => { resetView(); resizeCanvas(); };
+  // Llamado al entrar en la pestaña: siempre empieza centrado y ajustado.
+  // Si se cambió de nave desde el inicio, recarga los estantes de esa nave.
+  let naveCargada = null;
+  const entrar = () => {
+    resetView();
+    resizeCanvas();
+    const nave = Store.get('naveActual') || 1;
+    if (naveCargada !== nave) {
+      Store.set('selectedId', null);
+      updateInfoPanel();
+      searchCache = null; // el buscador debe reindexar los productos de esta nave
+      load();
+    }
+  };
 
   const setStatus = (cls, text) => {
     $('conn').className = 'status ' + cls;
@@ -268,8 +284,9 @@ const Mapa = (() => {
 
   // ── Datos ──
   const load = async () => {
+    const nave = Store.get('naveActual') || 1;
+    naveCargada = nave; // marca el intento para evitar cargas duplicadas
     try {
-      const nave = Store.get('naveActual') || 1;
       const { data, error } = await Api.estantes.listar(nave);
       if (error) throw error;
       Store.set('estantes', data || []);
@@ -279,6 +296,7 @@ const Mapa = (() => {
       Store.set('online', false);
       setStatus('err', 'sin conexión');
       Store.set('estantes', []);
+      naveCargada = null; // reintenta en la próxima entrada
     }
     draw();
   };
@@ -397,7 +415,7 @@ const Mapa = (() => {
     ['agregar', 'editar', 'guardar'].forEach((id) => { const el = $(id); if (el) el.style.display = 'none'; });
     const aviso = document.createElement('div');
     aviso.className = 'plano-locked';
-    aviso.textContent = '🔒 Solo administradores pueden editar el plano';
+    aviso.textContent = '🔒 Solo administradores pueden editar el layout';
     $('infoPanel').insertAdjacentElement('afterend', aviso);
   };
 
@@ -457,8 +475,9 @@ const Mapa = (() => {
           const tipo = TIPOS[e.tipo];
           const ew = e.rotacion === 90 ? tipo.h : tipo.w;
           const eh = e.rotacion === 90 ? tipo.w : tipo.h;
-          e.pos_x = clamp(Math.round(w.x / GRID) * GRID, PLANO.wall.x + ew / 2, PLANO.wall.x + PLANO.wall.w - ew / 2);
-          e.pos_y = clamp(Math.round(w.y / GRID) * GRID, PLANO.wall.y + eh / 2, PLANO.wall.y + PLANO.wall.h - eh / 2);
+          const wl = wallNave(Store.get('naveActual') || 1);
+          e.pos_x = clamp(Math.round(w.x / GRID) * GRID, wl.x + ew / 2, wl.x + wl.w - ew / 2);
+          e.pos_y = clamp(Math.round(w.y / GRID) * GRID, wl.y + eh / 2, wl.y + wl.h - eh / 2);
           updateInfoPanel(); draw();
         }
         return;
@@ -555,8 +574,9 @@ const Mapa = (() => {
           const tipo = TIPOS[e.tipo];
           const ew = e.rotacion === 90 ? tipo.h : tipo.w;
           const eh = e.rotacion === 90 ? tipo.w : tipo.h;
-          e.pos_x = clamp(Math.round(w.x / GRID) * GRID, PLANO.wall.x + ew / 2, PLANO.wall.x + PLANO.wall.w - ew / 2);
-          e.pos_y = clamp(Math.round(w.y / GRID) * GRID, PLANO.wall.y + eh / 2, PLANO.wall.y + PLANO.wall.h - eh / 2);
+          const wl = wallNave(Store.get('naveActual') || 1);
+          e.pos_x = clamp(Math.round(w.x / GRID) * GRID, wl.x + ew / 2, wl.x + wl.w - ew / 2);
+          e.pos_y = clamp(Math.round(w.y / GRID) * GRID, wl.y + eh / 2, wl.y + wl.h - eh / 2);
           touchMoved = true; updateInfoPanel(); draw();
         }
       }
@@ -593,7 +613,7 @@ const Mapa = (() => {
   };
 
   const toggleEdit = () => {
-    if (!Store.esAdmin) return UI.toast({ msg: 'Solo administradores pueden editar el plano', tipo: 'err' });
+    if (!Store.esAdmin) return UI.toast({ msg: 'Solo administradores pueden editar el layout', tipo: 'err' });
     Store.set('editMode', !Store.get('editMode'));
     $('editar').classList.toggle('active');
     canvas.style.cursor = 'grab';
@@ -740,6 +760,30 @@ const Mapa = (() => {
     $('confirmBtn').addEventListener('click', agregarElemento);
     aplicarPermisos();
     initSearch();
+
+    // ── Toggle del panel lateral (referencias + herramientas) ──
+    const sbToggle = $('sbToggle');
+    const sidebar = $('mapSidebar');
+    if (sbToggle && sidebar) {
+      const view = $('view-mapa');
+      // En celular el panel arranca escondido (hoja inferior)
+      if (window.innerWidth <= 640) view.classList.add('sb-hidden');
+      const syncToggle = () => {
+        const oculto = view.classList.contains('sb-hidden');
+        sbToggle.classList.toggle('closed', oculto);
+        sbToggle.title = oculto ? 'Mostrar panel' : 'Ocultar panel';
+      };
+      sbToggle.addEventListener('click', () => {
+        view.classList.toggle('sb-hidden');
+        syncToggle();
+      });
+      // El canvas ocupa el espacio liberado recién al terminar el deslizamiento
+      sidebar.addEventListener('transitionend', (e) => {
+        if (e.propertyName === 'margin-right' || e.propertyName === 'max-height') resizeCanvas();
+      });
+      syncToggle();
+    }
+
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
     load();

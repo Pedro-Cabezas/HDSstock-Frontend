@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>HDS · Warehouse</title>
+    <title>HDS · Stock</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&family=Barlow+Condensed:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/variables.css">
 <link rel="stylesheet" href="css/layout.css">
@@ -23,8 +23,9 @@
         </button>
         <div class="brand-text">
             <span class="name">HDS</span>
-            <span class="sub">Warehouse</span>
+            <span class="sub">Stock</span>
         </div>
+        <span class="nave-badge" id="naveBadge">Nave 1</span>
     </div>
     <div class="header-user">
         <span class="uname">👤 <strong id="usuarioNombre">Usuario</strong></span>
@@ -88,6 +89,7 @@
             </div>
             <ul class="mapa-search-results" id="mapaSearchResults"></ul>
         </div>
+        <button class="sb-toggle" id="sbToggle" aria-label="Mostrar u ocultar panel lateral" title="Ocultar panel"><span>❯</span></button>
     </section>
     <aside class="sidebar" id="mapSidebar">
         <div class="panel">
@@ -110,11 +112,27 @@
 <div class="view" id="view-stock">
     <div class="page">
         <h2>Gestión de Stock</h2>
-        <div class="subtitle">Inventario completo del almacén</div>
+        <div class="subtitle" id="stockSubtitle">Inventario completo del almacén</div>
         <div class="page-toolbar">
             <input type="text" id="stockSearch" placeholder="Buscar producto…">
             <select id="stockCatFilter"><option value="">Todas las categorías</option></select>
             <select id="stockEstanteFilter"><option value="">Todos los estantes</option></select>
+            <select id="stockUbicFilter"><option value="">Todos los niveles</option></select>
+            <select id="stockEstadoFilter">
+                <option value="">Cualquier stock</option>
+                <option value="sin">Sin stock (0)</option>
+                <option value="bajo">Stock bajo (1–5)</option>
+                <option value="ok">Con stock (6+)</option>
+                <option value="sinprecio">Sin precio</option>
+            </select>
+            <select id="stockOrden">
+                <option value="">Orden: estante</option>
+                <option value="nombre">Nombre A–Z</option>
+                <option value="cant-desc">Más stock primero</option>
+                <option value="cant-asc">Menos stock primero</option>
+                <option value="precio-desc">Precio: mayor</option>
+                <option value="precio-asc">Precio: menor</option>
+            </select>
             <div class="spacer"></div>
             <span class="total" id="stockTotal"></span>
         </div>
@@ -122,7 +140,7 @@
             <thead>
                 <tr>
                     <th>Estante</th><th>Ubic.</th><th>Producto</th>
-                    <th>Categoría</th><th>Posición</th><th>Stock</th><th>Descripción</th>
+                    <th>Categoría</th><th>Posición</th><th>Stock</th><th>Precio /u</th><th>Descripción</th>
                 </tr>
             </thead>
             <tbody id="stockBody"></tbody>
@@ -179,41 +197,115 @@
 <!-- ============ VISTA: DASHBOARD ============ -->
 <div class="view" id="view-dashboard">
     <div class="page">
-        <h2>Dashboard de Análisis</h2>
-        <div class="subtitle">Indicadores clave de rendimiento</div>
-
-        <div class="page-toolbar">
-            <select id="dashYear"></select>
-            <select id="dashQuarter">
-                <option value="">Todo el año</option>
-                <option value="1">Q1 (Ene–Mar)</option>
-                <option value="2">Q2 (Abr–Jun)</option>
-                <option value="3">Q3 (Jul–Sep)</option>
-                <option value="4">Q4 (Oct–Dic)</option>
-            </select>
-            <button id="dashRefresh">Actualizar</button>
-        </div>
-
-        <div class="kpi-grid" id="kpiGrid"></div>
-
-        <div class="chart-grid">
-            <div class="chart-box">
-                <h3>Movimientos por mes</h3>
-                <div id="chartMovimientos"></div>
+        <div class="dash-header">
+            <div>
+                <h2>Dashboard de Inventario</h2>
+                <div class="subtitle" id="dashSubtitle">Estado del almacén</div>
             </div>
-            <div class="chart-box">
-                <h3>Stock por categoría</h3>
-                <div id="chartCategorias"></div>
-            </div>
-            <div class="chart-box">
-                <h3>Actividad por usuario</h3>
-                <div id="chartUsuarios"></div>
-            </div>
-            <div class="chart-box">
-                <h3>Top productos con menos stock</h3>
-                <div id="chartBajoStock"></div>
+            <div class="dash-header-right page-toolbar">
+                <select id="dashYear"></select>
+                <button id="dashRefresh">Actualizar</button>
+                <span class="badge-date" id="dashFecha"></span>
             </div>
         </div>
+
+        <!-- ── Métricas: inventario ── -->
+        <div class="dash-section-title">Inventario <span class="dash-pill dash-pill-inv">Stock actual</span></div>
+        <div class="dash-metrics" id="dashMetricsInv"></div>
+
+        <!-- ── Métricas: actividad ── -->
+        <div class="dash-section-title">Actividad <span class="dash-pill dash-pill-act">Período seleccionado</span></div>
+        <div class="dash-metrics" id="dashMetricsAct"></div>
+
+        <!-- ── Gráficos principales ── -->
+        <div class="dash-charts">
+
+            <!-- Stock mensual -->
+            <div class="dash-card">
+                <h3>Stock mensual — <span class="dash-h3-hint">clic en barra para movimientos</span></h3>
+                <div class="dash-canvas-wrap"><canvas id="dashChartStock"></canvas></div>
+                <div class="dash-legend" id="dashLegendStock"></div>
+                <div class="dash-mov-panel" id="dashMovPanel">
+                    <div class="dash-panel-header">
+                        <div class="dash-panel-title" id="dashMovTitle">—</div>
+                        <button class="dash-btn-sm" id="dashMovClose">✕ cerrar</button>
+                    </div>
+                    <div class="dash-mov-summary" id="dashMovSummary"></div>
+                    <table class="dash-mov-table">
+                        <thead><tr><th>Tipo</th><th>Producto</th><th>Uds.</th><th>Usuario</th><th style="text-align:right;">Fecha</th></tr></thead>
+                        <tbody id="dashMovBody"></tbody>
+                    </table>
+                </div>
+                <div class="dash-cmp-block">
+                    <div class="dash-cmp-title">Comparar dos meses</div>
+                    <div class="dash-cmp-bar">
+                        <select class="dash-cmp-select" id="dashCmpA"><option value="">Mes A</option></select>
+                        <span class="dash-h3-hint">vs</span>
+                        <select class="dash-cmp-select" id="dashCmpB"><option value="">Mes B</option></select>
+                        <button class="dash-cmp-btn" id="dashCmpBtn">Comparar</button>
+                        <button class="dash-btn-sm" id="dashCmpClose" style="display:none;">✕</button>
+                    </div>
+                    <div class="dash-cmp-panel" id="dashCmpPanel">
+                        <div class="dash-cmp-grid" id="dashCmpGrid"></div>
+                        <div class="dash-cmp-delta" id="dashCmpDelta"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categorías (torta con desglose) -->
+            <div class="dash-card">
+                <h3>Categorías — <span class="dash-h3-hint">clic en sección para desglose</span></h3>
+                <div class="dash-canvas-wrap"><canvas id="dashChartCateg"></canvas></div>
+                <div class="dash-legend" id="dashLegendCateg"></div>
+                <div class="dash-hint" id="dashCategHint">↑ tocá una porción para ver sus productos</div>
+                <div class="dash-categ-panel" id="dashCategPanel">
+                    <div class="dash-panel-header">
+                        <div class="dash-panel-title" id="dashCategTitle"></div>
+                        <button class="dash-btn-sm" id="dashCategClose">↩ volver</button>
+                    </div>
+                    <div class="dash-subchart-wrap"><canvas id="dashChartSubCateg"></canvas></div>
+                    <div class="dash-legend" id="dashLegendSubCateg"></div>
+                    <div class="dash-categ-items" id="dashCategItems"></div>
+                </div>
+            </div>
+
+            <!-- Actividad mensual (línea, ancho completo) -->
+            <div class="dash-card wide">
+                <h3>Actividad mensual — movimientos registrados</h3>
+                <div class="dash-canvas-wrap" style="height:180px;"><canvas id="dashChartActividad"></canvas></div>
+            </div>
+
+        </div>
+
+        <!-- ── Top items ── -->
+        <div class="dash-section-title" style="margin-top:1.75rem;">Productos con más stock</div>
+        <div class="dash-card">
+            <div class="dash-hint" style="margin:0 0 12px;">Tocá una fila para ver ubicación, % del total y código QR</div>
+            <table class="dash-top-table">
+                <thead>
+                    <tr>
+                        <th style="width:32px;"></th>
+                        <th>Producto</th>
+                        <th style="width:120px;">Categoría</th>
+                        <th style="width:110px;">Estante</th>
+                        <th style="width:60px;text-align:right;">Uds.</th>
+                        <th style="width:20px;"></th>
+                    </tr>
+                </thead>
+                <tbody id="dashTopBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal QR del dashboard -->
+<div class="modal" id="dashQrModal">
+    <div class="modal-content dash-qr-box">
+        <h2 id="dashQrNombre"></h2>
+        <div class="dash-qr-sub" id="dashQrCodigo"></div>
+        <img id="dashQrImg" src="" alt="Código QR">
+        <div class="dash-qr-meta" id="dashQrMeta"></div>
+        <div class="modal-buttons"><button class="btn-primary" id="dashQrClose" style="width:100%;">Cerrar</button></div>
     </div>
 </div>
 
@@ -233,6 +325,15 @@
                 <option value="editar">Editar</option>
                 <option value="eliminar">Eliminar</option>
                 <option value="stock">Stock</option>
+            </select>
+            <select id="movUsuarioFilter"><option value="">Todos los usuarios</option></select>
+            <select id="movEstanteFilter"><option value="">Todos los estantes</option></select>
+            <select id="movFechaFilter">
+                <option value="">Todo el historial</option>
+                <option value="hoy">Hoy</option>
+                <option value="7">Últimos 7 días</option>
+                <option value="30">Últimos 30 días</option>
+                <option value="90">Últimos 90 días</option>
             </select>
             <button id="movRefresh">Actualizar</button>
             <div class="spacer"></div>
@@ -303,7 +404,7 @@
 <!-- ============ NAVBAR ============ -->
 <button class="dock-toggle" id="dockToggle" aria-label="Menú" aria-expanded="false">☰</button>
 <nav class="taskbar" id="taskbar">
-    <button data-view="mapa" class="active">🗺 Mapa</button>
+    <button data-view="mapa" class="active">🗺 Layout</button>
     <button data-view="stock">📦 Stock</button>
     <button data-view="pedidos">📋 Pedidos <span class="dock-badge" id="pedidosBadge" style="display:none"></span></button>
     <button data-view="dashboard">📊 Dashboard</button>
@@ -351,6 +452,7 @@
 
 <!-- Supabase (UMD, expone window.supabase) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
 <!-- Núcleo -->
 <script src="js/core/constants.js"></script>

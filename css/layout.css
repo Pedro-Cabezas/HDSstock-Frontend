@@ -77,8 +77,9 @@
         .btn-theme:hover {
             background: var(--accent-dim);
             border-color: var(--accent);
-            transform: translateY(-1px);
+            transform: translateY(-1px) rotate(-15deg);
         }
+        .btn-theme:active { transform: scale(0.9) rotate(-30deg); }
         .btn-salir {
             padding: 7px 14px;
             background: transparent;
@@ -174,6 +175,7 @@
             background: var(--accent);
             font-weight: 600;
             box-shadow: var(--glow-blue);
+            animation: popIn 0.3s var(--ease-spring);
         }
         .taskbar button.active:hover { transform: none; background: var(--accent); }
 
@@ -195,7 +197,51 @@
             display: flex;
             flex-direction: column;
             overflow-y: auto;
+            transition: margin-right 0.4s var(--ease), opacity 0.35s var(--ease);
         }
+        /* Panel oculto (desktop): se desliza hacia la derecha fuera de la vista */
+        @media (min-width: 641px) {
+            #view-mapa.sb-hidden .sidebar {
+                margin-right: -290px;
+                opacity: 0;
+                pointer-events: none;
+            }
+        }
+
+        /* ── Botón para esconder/mostrar el panel lateral ── */
+        .sb-toggle {
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 58px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface);
+            border: 1px solid var(--border-strong);
+            border-radius: 10px;
+            box-shadow: var(--shadow-1);
+            color: var(--text-dim);
+            font-size: 13px;
+            cursor: pointer;
+            z-index: 30;
+            transition: all 0.2s var(--ease);
+        }
+        .sb-toggle:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+            background: var(--accent-dim);
+            transform: translateY(-50%);
+        }
+        .sb-toggle:active { transform: translateY(-50%) scale(0.94); }
+        .sb-toggle span {
+            display: block;
+            transition: transform 0.4s var(--ease-spring);
+        }
+        .sb-toggle.closed span { transform: rotate(180deg); }
         .panel { padding: 16px 18px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
         .panel-title {
             font-family: var(--font-display);
@@ -210,10 +256,11 @@
         .legend-item {
             display: flex; align-items: center; gap: 10px; font-size: 11px;
             padding: 4px 6px; border-radius: var(--radius-sm);
-            transition: background 0.2s var(--ease);
+            transition: background 0.2s var(--ease), transform 0.2s var(--ease);
         }
-        .legend-item:hover { background: rgba(11, 28, 63, 0.03); }
-        .legend-swatch { width: 13px; height: 13px; border-radius: 4px; box-shadow: 0 0 8px rgba(11, 28, 63, 0.08); }
+        .legend-item:hover { background: rgba(11, 28, 63, 0.03); transform: translateX(3px); }
+        .legend-swatch { width: 13px; height: 13px; border-radius: 4px; box-shadow: 0 0 8px rgba(11, 28, 63, 0.08); transition: transform 0.2s var(--ease-spring); }
+        .legend-item:hover .legend-swatch { transform: scale(1.25); }
         .legend-item .lbl { flex: 1; color: var(--text-dim); }
         .legend-count {
             min-width: 30px; text-align: center; padding: 2px 6px;
@@ -420,13 +467,26 @@
         .unit-card:hover .unit-card-num { color: var(--accent); }
         .unit-card:active { background: rgba(13, 99, 234, 0.14); transform: scale(0.97); }
 
-        .unit-card[data-nave="2"] {
-            opacity: 0.4;
-            pointer-events: none;
-            cursor: not-allowed;
+        .nave-badge {
+            display: none;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            background: var(--surface-2);
+            border: 1px solid var(--border-strong);
+            border-radius: 999px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text);
+            white-space: nowrap;
         }
-        .unit-card[data-nave="2"]:hover { background: transparent; }
-        .unit-card[data-nave="2"]:hover .unit-card-icon { transform: none; }
+        .nave-badge::before {
+            content: '';
+            width: 7px; height: 7px; border-radius: 2px;
+            background: var(--accent);
+        }
 
         .unit-card-icon {
             width: 52px;
@@ -536,10 +596,15 @@
             padding: 10px 14px;
             cursor: pointer;
             border-bottom: 1px solid var(--border);
-            transition: background 0.14s;
+            transition: background 0.14s, padding-left 0.18s var(--ease);
+            animation: slideInLeft 0.25s var(--ease) backwards;
         }
+        .search-result-item:nth-child(2) { animation-delay: 0.03s; }
+        .search-result-item:nth-child(3) { animation-delay: 0.06s; }
+        .search-result-item:nth-child(4) { animation-delay: 0.09s; }
+        .search-result-item:nth-child(n+5) { animation-delay: 0.12s; }
         .search-result-item:last-child { border-bottom: none; }
-        .search-result-item:hover { background: var(--accent-dim); }
+        .search-result-item:hover { background: var(--accent-dim); padding-left: 18px; }
 
         .sri-nombre {
             font-size: 12px;
@@ -665,12 +730,23 @@
         border-radius: 20px 20px 0 0;
         max-height: 0;
         overflow: hidden;
+        margin-right: 0 !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
         transition: max-height 0.35s var(--ease, ease);
         position: relative;
         z-index: 80;
         flex-shrink: 0;
     }
-    .sidebar.open { max-height: 50vh; overflow-y: auto; }
+    #view-mapa:not(.sb-hidden) .sidebar { max-height: 50vh; overflow-y: auto; }
+
+    /* Botón del panel: abajo a la izquierda (la hamburguesa ocupa la derecha) */
+    .sb-toggle { top: auto; bottom: 14px; left: 12px; right: auto; transform: none; width: 46px; height: 34px; }
+    .sb-toggle:hover { transform: none; }
+    .sb-toggle:active { transform: scale(0.94); }
+    .sb-toggle span { transform: rotate(90deg); }
+    .sb-toggle.closed span { transform: rotate(-90deg); }
+
     .tools { flex-direction: row; flex-wrap: wrap; }
     .tools button { flex: 1; min-width: 80px; }
 

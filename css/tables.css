@@ -27,8 +27,18 @@
         }
         .data-table td { padding: 10px 13px; border-bottom: 1px solid var(--border); vertical-align: middle; transition: background 0.18s; }
         .data-table tr:last-child td { border-bottom: none; }
-        .data-table tbody tr { transition: background 0.18s var(--ease); }
+        .data-table tbody tr { transition: background 0.18s var(--ease); animation: riseIn 0.35s var(--ease) backwards; }
+        .data-table tbody tr:nth-child(1)  { animation-delay: 0.02s; }
+        .data-table tbody tr:nth-child(2)  { animation-delay: 0.05s; }
+        .data-table tbody tr:nth-child(3)  { animation-delay: 0.08s; }
+        .data-table tbody tr:nth-child(4)  { animation-delay: 0.11s; }
+        .data-table tbody tr:nth-child(5)  { animation-delay: 0.14s; }
+        .data-table tbody tr:nth-child(6)  { animation-delay: 0.17s; }
+        .data-table tbody tr:nth-child(7)  { animation-delay: 0.20s; }
+        .data-table tbody tr:nth-child(8)  { animation-delay: 0.23s; }
+        .data-table tbody tr:nth-child(n+9) { animation-delay: 0.26s; }
         .data-table tbody tr:hover td { background: rgba(13, 99, 234, 0.035); }
+        .data-table tbody tr:hover td:first-child { box-shadow: inset 2.5px 0 0 var(--accent); }
 
         .ubic {
             display: inline-block; padding: 3px 9px;
@@ -52,7 +62,9 @@
             display: inline-block; padding: 3px 10px; font-size: 8.5px;
             text-transform: uppercase; letter-spacing: 0.1em;
             border: 1px solid; border-radius: 12px; font-weight: 600;
+            transition: transform 0.18s var(--ease-spring);
         }
+        tr:hover .accion-badge, tr:hover .estado-badge { transform: scale(1.05); }
         .accion-crear { color: var(--ok); border-color: rgba(22,163,90,0.28); background: var(--ok-dim); }
         .accion-editar { color: var(--accent); border-color: rgba(13,99,234,0.28); background: var(--accent-dim); }
         .accion-eliminar { color: var(--err); border-color: rgba(229,72,77,0.28); background: var(--err-dim); }

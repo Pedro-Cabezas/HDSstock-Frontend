@@ -33,7 +33,7 @@
     border-radius: 14px;
     padding: 24px;
     box-shadow: var(--shadow-2);
-    animation: modalIn 0.35s var(--ease);
+    animation: modalIn 0.38s var(--ease-spring);
 }
 .modal-content h2 {
     font-family: var(--font-display);
@@ -60,8 +60,10 @@
     color: var(--accent);
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(13, 99, 234, 0.1);
+    animation: popIn 0.28s var(--ease-spring);
 }
-.tipo-btn .sw { width: 11px; height: 11px; flex: 0 0 auto; border-radius: 3px; }
+.tipo-btn .sw { width: 11px; height: 11px; flex: 0 0 auto; border-radius: 3px; transition: transform 0.2s var(--ease-spring); }
+.tipo-btn:hover .sw { transform: scale(1.3); }
 .modal-input {
     width: 100%; padding: 11px 13px;
     background: var(--surface-2);
@@ -197,7 +199,11 @@
     width: 26px; height: 26px; padding: 0;
     display: grid; place-items: center; font-size: 15px;
     border-radius: 8px;
+    transition: all 0.15s var(--ease);
 }
+.stock button:first-of-type:hover { color: var(--err); border-color: var(--err); background: var(--err-dim); }
+.stock button:last-of-type:hover { color: var(--ok); border-color: var(--ok); background: var(--ok-dim); }
+.stock button:active { transform: scale(0.85); }
 .stock .n { min-width: 34px; text-align: center; font-weight: 700; font-size: 12px; }
 .stock input.qty-input {
     width: 62px; padding: 5px 7px;
@@ -213,6 +219,13 @@
     box-shadow: 0 0 0 3px var(--accent-dim);
 }
 .desc { color: var(--text-dim); max-width: 210px; font-size: 10px; margin-top: 2px; }
+.prod-precio {
+    display: inline-block; margin-top: 3px;
+    font-size: 9.5px; font-weight: 700;
+    color: var(--ok);
+    background: var(--ok-dim);
+    padding: 1px 7px; border-radius: 999px;
+}
 
 .prod-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .prod-form .full { grid-column: 1 / -1; }
@@ -232,6 +245,40 @@
 .prod-form input:focus, .prod-form textarea:focus, .prod-form select:focus {
     outline: none; border-color: var(--accent); background: var(--surface);
     box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+/* ── Nivel del estante: prefijo fijo (letra) + número ── */
+.ubic-wrap { display: flex; align-items: stretch; }
+.ubic-prefix {
+    display: flex; align-items: center;
+    padding: 0 14px;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-weight: 700; font-size: 13px;
+    border: 1px solid var(--border-strong);
+    border-right: none;
+    border-radius: 13px 0 0 13px;
+    flex-shrink: 0;
+}
+.ubic-wrap input {
+    flex: 1; min-width: 0;
+    border-radius: 0 13px 13px 0 !important;
+}
+
+/* ── Validación de formularios (productos, detalle, etc.) ── */
+.prod-form .req { color: var(--err); font-weight: 700; }
+input.input-error, textarea.input-error, select.input-error {
+    border-color: var(--err) !important;
+    box-shadow: 0 0 0 3px var(--err-dim) !important;
+    animation: shake 0.3s var(--ease);
+}
+
+/* ── Fila recién guardada: destello de confirmación ── */
+.prod-table tr.row-flash td { animation: rowFlash 1.4s var(--ease); }
+@keyframes rowFlash {
+    0%   { background: var(--accent-dim); }
+    60%  { background: var(--accent-dim); }
+    100% { background: transparent; }
 }
 
 /* ── Mobile ── */

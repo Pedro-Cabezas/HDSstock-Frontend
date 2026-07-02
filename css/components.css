@@ -22,24 +22,30 @@
             background: var(--surface-2);
             color: var(--text);
             border-color: var(--border-strong);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
         }
-        button:active { transform: scale(0.98); }
+        button:active { transform: translateY(0) scale(0.97); box-shadow: none; transition-duration: 0.06s; }
+        button:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+        /* Botones de superficie completa: no deben "flotar" al hacer hover */
+        .pd-section-toggle:hover, .ped-menu-item:hover { transform: none; box-shadow: none; }
+        .pd-section-toggle:active, .ped-menu-item:active { transform: none; }
 
         .btn-primary {
-            background: var(--accent);
+            background: linear-gradient(180deg, #2277f5, var(--accent));
             color: #FFFFFF;
             border: none;
             font-weight: 600;
-            box-shadow: var(--glow-blue);
+            box-shadow: var(--glow-blue), inset 0 1px 0 rgba(255,255,255,0.18);
         }
         .btn-primary:hover {
-            background: #0b56cc;
+            background: linear-gradient(180deg, #2f80f7, #0b56cc);
             color: #FFFFFF;
-            box-shadow: 0 10px 24px rgba(13, 99, 234, 0.34);
+            box-shadow: 0 10px 24px rgba(13, 99, 234, 0.38), inset 0 1px 0 rgba(255,255,255,0.18);
         }
 
         .btn-accent { color: var(--accent); border-color: rgba(13, 99, 234, 0.28); background: var(--surface); }
-        .btn-accent:hover { background: var(--accent-dim); color: var(--accent); border-color: var(--accent); }
+        .btn-accent:hover { background: var(--accent-dim); color: var(--accent); border-color: var(--accent); box-shadow: 0 4px 14px rgba(13, 99, 234, 0.15); }
 
         button.toggle.active {
             background: var(--accent);
@@ -182,7 +188,12 @@
             box-shadow: var(--shadow-1);
             animation: riseIn 0.4s var(--ease) backwards;
         }
-        .user-card:hover { transform: translateY(-2px); border-color: var(--border-strong); }
+        .user-card:hover { transform: translateY(-2px); border-color: var(--border-strong); box-shadow: var(--shadow-2); }
+        .user-card:nth-child(2) { animation-delay: 0.05s; }
+        .user-card:nth-child(3) { animation-delay: 0.10s; }
+        .user-card:nth-child(4) { animation-delay: 0.15s; }
+        .user-card:nth-child(5) { animation-delay: 0.20s; }
+        .user-card:nth-child(6) { animation-delay: 0.25s; }
         .user-card::before {
             content: '';
             position: absolute; left: 0; top: 0; bottom: 0;
@@ -249,6 +260,7 @@
             color: #FFFFFF;
             font-size: 11px;
             font-weight: 800;
+            animation: popIn 0.25s var(--ease-spring);
         }
 
         /* ===== SCROLLBAR ===== */
@@ -388,7 +400,9 @@
             background: rgba(11,28,63,0.06);
             border: 1px solid var(--border);
             border-radius: var(--radius-sm);
+            transition: border-color 0.2s var(--ease), transform 0.2s var(--ease);
         }
+        .pd-attr:hover { border-color: var(--border-strong); transform: translateY(-1px); }
         .pd-attr .k { font-size: 8px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-dim); }
         .pd-attr .v { font-size: 12px; font-weight: 600; }
         .pd-desc {
@@ -446,7 +460,12 @@
         .pd-hist-row {
             display: flex; align-items: center; gap: 12px;
             padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 11px;
+            animation: slideInLeft 0.3s var(--ease) backwards;
         }
+        .pd-hist-row:nth-child(2) { animation-delay: 0.05s; }
+        .pd-hist-row:nth-child(3) { animation-delay: 0.10s; }
+        .pd-hist-row:nth-child(4) { animation-delay: 0.15s; }
+        .pd-hist-row:nth-child(n+5) { animation-delay: 0.20s; }
         .pd-hist-row:last-child { border-bottom: none; }
         .pd-hist-delta {
             min-width: 50px; text-align: center; font-weight: 700; font-size: 13px;
@@ -508,6 +527,29 @@
 .toast-err   { border-left: 3px solid var(--err); }
 .toast-warn  { border-left: 3px solid var(--warn); }
 .toast-info  { border-left: 3px solid var(--accent); }
+
+/* ── Botón en estado "guardando" (spinner embebido) ── */
+.btn-loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+.btn-loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+/* Variante para botones claros (fondo no acentuado) */
+button.btn-loading:not(.btn-primary):not(.btn-danger)::after {
+  border-color: var(--border-strong);
+  border-top-color: var(--accent);
+}
 
 /* ── Loader ── */
 .loader {

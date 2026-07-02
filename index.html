@@ -57,6 +57,16 @@
             from { opacity: 0; transform: translateY(8px); }
             to   { opacity: 1; transform: translateY(0); }
         }
+        @keyframes shakeX {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+        @keyframes tabPop {
+            0%   { transform: scale(0.92); }
+            60%  { transform: scale(1.04); }
+            100% { transform: scale(1); }
+        }
 
         .container { width: 100%; max-width: 440px; }
         .card {
@@ -116,6 +126,7 @@
             background: var(--accent);
             font-weight: 600;
             box-shadow: 0 3px 14px var(--glow);
+            animation: tabPop 0.3s var(--ease);
         }
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeUp 0.35s var(--ease); }
@@ -139,9 +150,11 @@
             border-radius: var(--radius-sm);
             transition: all 0.22s var(--ease);
         }
+        .field input:hover { border-color: rgba(11, 28, 63, 0.3); }
         .field input:focus {
             outline: none;
             border-color: var(--accent);
+            background: var(--surface);
             box-shadow: 0 0 0 3px rgba(13, 99, 234, 0.12);
         }
         .btn {
@@ -181,7 +194,7 @@
             animation: fadeUp 0.3s var(--ease);
         }
         .message.ok { background: rgba(22, 163, 90, 0.08); color: var(--ok); border-color: rgba(22, 163, 90, 0.3); display: block; }
-        .message.err { background: var(--err-dim); color: var(--err); border-color: rgba(229, 72, 77, 0.28); display: block; }
+        .message.err { background: var(--err-dim); color: var(--err); border-color: rgba(229, 72, 77, 0.28); display: block; animation: fadeUp 0.3s var(--ease), shakeX 0.4s var(--ease) 0.1s; }
         .message.warn { background: var(--warn-dim); color: var(--warn); border-color: rgba(232, 144, 42, 0.30); display: block; }
         .status-section {
             text-align: center;
@@ -249,7 +262,7 @@
             align-items: center;
             justify-content: center;
             filter: drop-shadow(0 8px 20px rgba(13, 99, 234, 0.15));
-            animation: splashLogoSpin 4s linear infinite;
+            animation: splashLogoFloat 3.2s ease-in-out infinite;
         }
         .splash-logo img {
             width: 100%;
@@ -308,9 +321,9 @@
             from { opacity: 0; transform: scale(0.94) translateY(20px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
-        @keyframes splashLogoSpin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        @keyframes splashLogoFloat {
+            0%, 100% { transform: translateY(0); }
+            50%      { transform: translateY(-12px); }
         }
         @keyframes splashProgress {
             0% { width: 0%; }
@@ -356,7 +369,7 @@
             <img src="assets/logo-hds.png" alt="HDS Logo">
         </div>
         <h1 class="splash-title">HDS</h1>
-        <p class="splash-subtitle">Warehouse System</p>
+        <p class="splash-subtitle">Stock System</p>
         <div class="splash-progress">
             <div class="splash-progress-bar"></div>
         </div>
@@ -368,7 +381,7 @@
     <div class="card">
         <div class="logo">
             <h1>HDS</h1>
-            <p>Warehouse System</p>
+            <p>Stock System</p>
         </div>
 
         <div class="tabs">

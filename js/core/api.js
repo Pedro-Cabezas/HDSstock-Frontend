@@ -58,9 +58,11 @@ const Api = {
         .eq('estante_id', estanteId).order('ubicacion', { ascending: true }),
     detalle: (id) =>
       sb.from('productos').select(COLS.productosConEstante).eq('id', id).single(),
+    // Filtra por la nave del ESTANTE (inner join): es la fuente de verdad,
+    // aunque el producto tuviera una nave desactualizada.
     inventario: (nave = 1) =>
-      sb.from('productos').select(COLS.productosConEstante)
-        .eq('nave', nave).order('estante_id', { ascending: true }),
+      sb.from('productos').select(COLS.productosConEstanteInner)
+        .eq('estantes.nave', nave).order('estante_id', { ascending: true }),
     crear: (data) => sb.from('productos').insert([data]).select(COLS.productos),
     actualizar: (id, data) => sb.from('productos').update(data).eq('id', id),
     setCantidad: (id, cantidad) => sb.from('productos').update({ cantidad }).eq('id', id),

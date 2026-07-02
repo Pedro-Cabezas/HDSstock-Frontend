@@ -179,6 +179,7 @@ const Productos = (() => {
               <td>
                 <div class="clickable-name" data-detalle="${p.id}" role="button" tabindex="0">${esc(p.nombre)}</div>
                 <div class="desc">${esc(p.descripcion || '')}</div>
+                ${p.precio != null ? `<div class="prod-precio">${fmtPrecio(p.precio)} /u</div>` : ''}
               </td>
               <td><span class="cat" style="background:${catColor(p.categoria)}">${esc(p.categoria || '—')}</span>
                 <div style="font-size:9px;color:var(--text-dim);margin-top:3px">${esc(p.posicion || '')}</div></td>
@@ -318,51 +319,143 @@ const Productos = (() => {
   };
 
   // ── Form alta/edición ──
+  let _formSnapshot = '';
+
+  const leerFormValores = () => JSON.stringify([
+    $('fNombre').value, $('fCategoria').value, $('fCantidad').value,
+    $('fPrecio').value, $('fUbicNum').value, $('fPosicion').value, $('fDescripcion').value,
+  ]);
+
+  // Vuelve al listado; si hay cambios sin guardar, pide confirmación
+  const volverAlListado = () => {
+    if (_formSnapshot && leerFormValores() !== _formSnapshot) {
+      if (!confirm('Hay cambios sin guardar. ¿Descartar y volver?')) return;
+    }
+    _formSnapshot = '';
+    renderList();
+  };
+
+  const marcarError = (input) => {
+    input.classList.add('input-error');
+    input.focus();
+    input.addEventListener('input', () => input.classList.remove('input-error'), { once: true });
+  };
+
   const renderForm = (id) => {
     Store.set('prodEditId', id);
     const p = id ? Store.get('productos').find((x) => x.id === id) : {};
     const catOpts = getCategorias().map((c) => `<option value="${c}">${c}</option>`).join('');
     const posOpts = POSICIONES.map((c) => `<option value="${c}" ${p.posicion === c ? 'selected' : ''}>${c}</option>`).join('');
+    // La ubicación siempre es <letra del estante> + <número de nivel>:
+    // el prefijo queda fijo y solo se carga el número.
+    const est = Store.get('estantes').find((x) => x.id === Store.get('prodEstanteId'));
+    const prefijo = est ? est.nombre : '';
+    let nivelNum = '';
+    if (p.ubicacion) {
+      nivelNum = (prefijo && p.ubicacion.startsWith(prefijo))
+        ? p.ubicacion.slice(prefijo.length).replace(/\D/g, '')
+        : p.ubicacion.replace(/\D/g, '');
+    }
+
     $('prodBody').innerHTML = `
       <div class="prod-toolbar">
         <span class="count">${id ? 'Editar' : 'Nuevo'} producto</span>
         <button id="prodBack" style="width:auto">← Volver</button>
       </div>
-      <div class="prod-form">
-        <div class="full"><label>Nombre</label><input type="text" id="fNombre" value="${esc(p.nombre || '')}" maxlength="100"></div>
-        <div><label>Categoría</label><input type="text" id="fCategoria" list="categorias-list" value="${esc(p.categoria || '')}" maxlength="50"><datalist id="categorias-list">${catOpts}</datalist></div>
+      <div class="prod-form" id="prodForm">
+        <div class="full"><label>Nombre <span class="req">*</span></label><input type="text" id="fNombre" value="${esc(p.nombre || '')}" maxlength="100" placeholder="Nombre del producto"></div>
+        <div><label>Categoría <span class="req">*</span></label><input type="text" id="fCategoria" list="categorias-list" value="${esc(p.categoria || '')}" maxlength="50" placeholder="Elegí o escribí una nueva"><datalist id="categorias-list">${catOpts}</datalist></div>
         <div><label>Cantidad</label><input type="number" id="fCantidad" value="${p.cantidad ?? 0}" min="0"></div>
-        <div><label>Ubicación (ej: A1)</label><input type="text" id="fUbicacion" value="${esc(p.ubicacion || '')}" maxlength="10"></div>
+        <div><label>Precio por unidad ($)</label><input type="number" id="fPrecio" value="${p.precio ?? ''}" min="0" step="0.01" placeholder="Opcional"></div>
+        <div><label>Nivel (estante ${esc(prefijo)})</label>
+          <div class="ubic-wrap">
+            <span class="ubic-prefix">${esc(prefijo)}</span>
+            <input type="number" id="fUbicNum" value="${esc(nivelNum)}" min="1" max="99" placeholder="Nº">
+          </div>
+        </div>
         <div><label>Posición</label><select id="fPosicion">${posOpts}</select></div>
-        <div class="full"><label>Descripción</label><textarea id="fDescripcion" maxlength="300">${esc(p.descripcion || '')}</textarea></div>
+        <div class="full"><label>Descripción</label><textarea id="fDescripcion" maxlength="300" placeholder="Opcional">${esc(p.descripcion || '')}</textarea></div>
       </div>
       <div class="modal-buttons">
         <button id="prodCancel">Cancelar</button>
-        <button class="btn-primary" id="prodSave">${id ? 'Guardar' : 'Agregar'}</button>
+        ${id ? '' : '<button id="prodSaveOtro" title="Guarda y deja el formulario listo para cargar el siguiente">Guardar y cargar otro</button>'}
+        <button class="btn-primary" id="prodSave">${id ? 'Guardar cambios' : 'Agregar producto'}</button>
       </div>`;
-    $('prodBack').addEventListener('click', renderList);
-    $('prodCancel').addEventListener('click', renderList);
-    $('prodSave').addEventListener('click', guardar);
+
+    _formSnapshot = leerFormValores();
+    $('prodBack').addEventListener('click', volverAlListado);
+    $('prodCancel').addEventListener('click', volverAlListado);
+    $('prodSave').addEventListener('click', () => guardar(false));
+    $('prodSaveOtro')?.addEventListener('click', () => guardar(true));
+
+    // Atajos: Enter guarda (salvo en descripción), Esc vuelve al listado
+    $('prodForm').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') { e.preventDefault(); guardar(false); }
+      else if (e.key === 'Escape') volverAlListado();
+    });
+    $('fNombre').focus();
   };
 
-  const guardar = async () => {
+  // Resalta brevemente la fila de un producto en el listado
+  const flashFila = (id) => {
+    const nombre = document.querySelector(`.clickable-name[data-detalle="${id}"]`);
+    nombre?.closest('tr')?.classList.add('row-flash');
+  };
+
+  let _guardando = false;
+  const guardar = async (cargarOtro = false) => {
+    if (_guardando) return;
     if (!Store.get('online')) return UI.toast({ title: 'Sin conexión', tipo: 'err' });
+
+    // Validación con marcado visual del campo
+    const nombre = $('fNombre').value.trim();
+    if (!nombre) { marcarError($('fNombre')); return UI.toast({ msg: 'El nombre es obligatorio', tipo: 'warn' }); }
     const categoria = $('fCategoria').value.trim();
-    if (!categoria) return UI.toast({ msg: 'La categoría es obligatoria', tipo: 'warn' });
+    if (!categoria) { marcarError($('fCategoria')); return UI.toast({ msg: 'La categoría es obligatoria', tipo: 'warn' }); }
+    const cantidad = parseInt($('fCantidad').value);
+    if (isNaN(cantidad) || cantidad < 0) { marcarError($('fCantidad')); return UI.toast({ msg: 'La cantidad debe ser 0 o mayor', tipo: 'warn' }); }
+    const precioTxt = $('fPrecio').value.trim();
+    const precio = precioTxt === '' ? null : parseFloat(precioTxt);
+    if (precio !== null && (isNaN(precio) || precio < 0)) { marcarError($('fPrecio')); return UI.toast({ msg: 'El precio debe ser 0 o mayor', tipo: 'warn' }); }
+
+    const prodEditId = Store.get('prodEditId');
+
+    // Aviso de duplicado al crear (mismo nombre en este estante)
+    if (!prodEditId) {
+      const dup = Store.get('productos').find((x) => (x.nombre || '').trim().toLowerCase() === nombre.toLowerCase());
+      if (dup && !confirm(`Ya existe "${dup.nombre}" en este estante (${dup.cantidad ?? 0} uds en ${dup.ubicacion || 'sin nivel'}).\n¿Agregarlo igual?`)) return;
+    }
+
+    // Ubicación = letra del estante + número de nivel (el prefijo es fijo)
+    const estanteActual = Store.get('estantes').find((e) => e.id === Store.get('prodEstanteId'));
+    const nivelTxt = $('fUbicNum').value.trim();
+    if (nivelTxt !== '' && (parseInt(nivelTxt) < 1 || isNaN(parseInt(nivelTxt)))) {
+      marcarError($('fUbicNum'));
+      return UI.toast({ msg: 'El nivel debe ser un número desde 1', tipo: 'warn' });
+    }
+
     agregarCategoria(categoria);
     const payload = {
       estante_id: Store.get('prodEstanteId'),
-      nave: Store.get('naveActual') || 1,
-      nombre: $('fNombre').value.trim(),
+      // La nave del producto es la del estante donde se carga (no la vista actual)
+      nave: estanteActual?.nave ?? (Store.get('naveActual') || 1),
+      nombre,
       categoria,
-      cantidad: parseInt($('fCantidad').value) || 0,
-      ubicacion: $('fUbicacion').value.trim(),
+      cantidad,
+      precio,
+      ubicacion: nivelTxt !== '' ? `${estanteActual?.nombre || ''}${parseInt(nivelTxt)}` : '',
       posicion: $('fPosicion').value,
       descripcion: $('fDescripcion').value.trim(),
     };
-    if (!payload.nombre) return UI.toast({ msg: 'El nombre es obligatorio', tipo: 'warn' });
-    const prodEditId = Store.get('prodEditId');
+
+    const btn = $('prodSave'), btnOtro = $('prodSaveOtro');
+    _guardando = true;
+    (cargarOtro ? btnOtro : btn)?.classList.add('btn-loading');
+    if (btn) btn.disabled = true;
+    if (btnOtro) btnOtro.disabled = true;
+
     try {
+      let idGuardado = prodEditId;
       if (prodEditId) {
         const { error } = await Api.productos.actualizar(prodEditId, payload);
         if (error) throw error;
@@ -372,11 +465,38 @@ const Productos = (() => {
         payload.codigo = generarCodigoProducto();
         const { data, error } = await Api.productos.crear(payload);
         if (error) throw error;
+        idGuardado = data[0]?.id;
         await registrarMovimiento(MOV_ACCION.CREAR, data[0], 'Producto creado', null, payload.cantidad);
       }
-      await load();
-      UI.toast({ title: 'Guardado', tipo: 'ok' });
-    } catch (e) { UI.toast({ title: 'Error al guardar', msg: e.message, tipo: 'err' }); }
+      _formSnapshot = '';
+
+      if (cargarOtro) {
+        // Refrescar datos de fondo y dejar el form listo para el siguiente:
+        // conserva categoría, nivel y posición (carga por tandas)
+        const keep = { categoria: payload.categoria, nivel: nivelTxt, posicion: payload.posicion };
+        try {
+          const { data } = await Api.productos.porEstante(Store.get('prodEstanteId'));
+          Store.set('productos', data || []);
+        } catch { /* noop */ }
+        renderForm(null);
+        $('fCategoria').value = keep.categoria;
+        $('fUbicNum').value = keep.nivel;
+        $('fPosicion').value = keep.posicion;
+        _formSnapshot = leerFormValores();
+        UI.toast({ title: 'Guardado', msg: `"${payload.nombre}" agregado. Listo para el siguiente.`, tipo: 'ok' });
+      } else {
+        await load();
+        if (idGuardado) flashFila(idGuardado);
+        UI.toast({ title: 'Guardado', msg: `"${payload.nombre}" ${prodEditId ? 'actualizado' : 'agregado'}.`, tipo: 'ok' });
+      }
+    } catch (e) {
+      UI.toast({ title: 'Error al guardar', msg: e.message, tipo: 'err' });
+    } finally {
+      _guardando = false;
+      document.querySelectorAll('.btn-loading').forEach((b) => { b.classList.remove('btn-loading'); b.disabled = false; });
+      if (btn) btn.disabled = false;
+      if (btnOtro) btnOtro.disabled = false;
+    }
   };
 
   // Cambio de stock por cantidad (desde el modal de cantidad del estante)

@@ -17,12 +17,7 @@ const App = (() => {
       home: () => {
         $$('.unit-card').forEach((btn) => {
           btn.addEventListener('click', () => {
-            const nave = Number(btn.dataset.nave);
-            if (nave === 2) {
-              UI.toast({ title: 'Próximamente', msg: 'Nave 2 estará disponible en breve', tipo: 'info' });
-              return;
-            }
-            Store.set('naveActual', nave);
+            Store.set('naveActual', Number(btn.dataset.nave));
             cambiarVista('mapa');
           });
         });
@@ -63,6 +58,12 @@ const App = (() => {
     document.body.classList.toggle('at-home', vista === 'home');
     const btnInicio = $('btnInicio');
     if (btnInicio) btnInicio.style.display = vista === 'home' ? 'none' : 'flex';
+    // Indicador de nave activa en el header (oculto en home)
+    const naveBadge = $('naveBadge');
+    if (naveBadge) {
+      naveBadge.style.display = vista === 'home' ? 'none' : 'inline-flex';
+      naveBadge.textContent = 'Nave ' + (Store.get('naveActual') || 1);
+    }
 
     initVista(vista);
     cargarDatosVista(vista);

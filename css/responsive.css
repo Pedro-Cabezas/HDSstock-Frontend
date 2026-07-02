@@ -36,8 +36,12 @@
     .header-user .uname { max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
     /* ── Vistas: usar toda la pantalla, dejar lugar al dock ── */
-    .view { height: calc(100vh - 60px); }
+    .view { height: calc(100dvh - 60px); }            /* dvh: respeta la barra del navegador */
     .info-panel { padding: 12px 14px 90px; }          /* padding-bottom por el dock */
+
+    /* ── Header: badges compactos ── */
+    .nave-badge { padding: 4px 9px; font-size: 8px; letter-spacing: 0.08em; }
+    .badge-date { display: none; }                     /* fecha del dashboard: ya está en el subtítulo */
 
     /* ── DOCK → MENÚ HAMBURGUESA ── */
     .dock-toggle {
@@ -110,27 +114,31 @@
         white-space: nowrap;
         min-width: 0;
     }
-    .data-table thead, .data-table tbody { display: table; width: 100%; min-width: 540px; }
+    .data-table thead, .data-table tbody { display: table; width: 100%; min-width: 560px; }
 
-    /* ── Toolbar de página: apilada ── */
-    .page-toolbar { gap: 8px; }
-    .page-toolbar input, .page-toolbar select { flex: 1 1 100%; width: 100%; }
-    .page-toolbar input[type="text"] { width: 100%; }
+    /* ── Tabla de productos del estante: scroll horizontal ── */
+    .prod-body { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .prod-table { min-width: 520px; }
+
+    /* ── Toolbar de página: búsqueda a ancho completo, selects de a dos ── */
+    .page-toolbar { gap: 7px; }
+    .page-toolbar input[type="text"] { flex: 1 1 100%; width: 100%; }
+    .page-toolbar select { flex: 1 1 calc(50% - 4px); width: auto; min-width: 0; }
+    .page-toolbar button { flex: 1 1 calc(50% - 4px); }
 
     /* ── KPIs: 2 columnas en vez de 4 ── */
-    .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px; }
-    .kpi .kpi-value { font-size: 22px; }
+    .dash-metrics { grid-template-columns: repeat(2, 1fr) !important; gap: 10px; }
+    .dash-metric-value { font-size: 20px; }
 
-    /* ── Mapa: sidebar de info como hoja inferior ── */
-    .sidebar {
-        position: fixed;
-        bottom: 0; left: 0; right: 0;
-        width: 100% !important;
-        max-height: 55vh;
-        border-radius: 18px 18px 0 0;
-        box-shadow: 0 -8px 30px rgba(11, 28, 63, 0.18);
-        z-index: 90;
-    }
+    /* ── Mapa: la hoja inferior del sidebar la maneja layout.css
+       (max-height 0 ↔ abierta con el botón sb-toggle). Acá solo la sombra. ── */
+    .sidebar { box-shadow: 0 -8px 30px rgba(11, 28, 63, 0.18); }
+
+    /* ── Dashboard ── */
+    .dash-header { flex-direction: column; align-items: stretch; }
+    .dash-mov-panel { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .dash-mov-table { min-width: 420px; }
+    .dash-canvas-wrap { height: 180px; }
 
     /* ── Vista de producto: una sola columna ── */
     .pd-main { grid-template-columns: 1fr !important; }
@@ -145,13 +153,20 @@
 
     /* ── Inputs más grandes para dedos (y evitar zoom iOS con ≥16px) ── */
     .modal-input, .prod-form input, .prod-form select, .prod-form textarea,
+    .pd-edit-grid input, .pd-edit-grid select, .pd-edit-grid textarea,
     .page-toolbar input, .page-toolbar select { font-size: 16px; }
+    .ubic-prefix { font-size: 15px; }
 }
 
 /* ========================= CELULAR ANGOSTO (≤380px) ========================= */
 @media (max-width: 380px) {
-    .kpi-grid { grid-template-columns: 1fr !important; }
+    .dash-metrics { grid-template-columns: 1fr !important; }
     .brand-text .sub { display: none; }
+    .nave-badge { display: none !important; }
+    .page-toolbar select, .page-toolbar button { flex: 1 1 100%; }
+    .pd-stock-value { font-size: 48px; }
+    .pd-stock-control { flex-direction: column; }
+    .dash-mov-summary { grid-template-columns: 1fr; }
 }
 
 /* El canvas del mapa maneja sus propios gestos (pan/zoom) */

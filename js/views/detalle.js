@@ -192,6 +192,8 @@ const Detalle = (() => {
             <div class="pd-attr"><span class="k">Posición</span><span class="v">${esc(p.posicion || '—')}</span></div>
             ${p.codigo ? `<div class="pd-attr"><span class="k">Código</span><span class="v" style="font-family:var(--font-mono);font-size:11px">${esc(p.codigo)}</span></div>` : ''}
             <div class="pd-attr"><span class="k">Estante</span><span class="v">${esc(est ? est.nombre : '—')}</span></div>
+            <div class="pd-attr"><span class="k">Precio / unidad</span><span class="v">${fmtPrecio(p.precio)}</span></div>
+            ${p.precio != null ? `<div class="pd-attr"><span class="k">Valor total</span><span class="v">${fmtPrecio((p.precio || 0) * (p.cantidad || 0))}</span></div>` : ''}
           </div>
           ${p.descripcion ? `<p class="pd-desc">${esc(p.descripcion)}</p>` : ''}
         </div>
@@ -220,8 +222,15 @@ const Detalle = (() => {
               <div class="pd-edit-grid">
                 <div class="full"><label>Nombre</label><input type="text" id="pdNombre" value="${esc(p.nombre || '')}" maxlength="100"></div>
                 <div><label>Categoría</label><select id="pdCategoria">${catOpts}</select></div>
-                <div><label>Ubicación (ej: A1)</label><input type="text" id="pdUbicacion" value="${esc(p.ubicacion || '')}" maxlength="10"></div>
+                <div><label>Nivel (estante ${esc(est ? est.nombre : '')})</label>
+                  <div class="ubic-wrap">
+                    <span class="ubic-prefix">${esc(est ? est.nombre : '')}</span>
+                    <input type="number" id="pdUbicNum" min="1" max="99" placeholder="Nº"
+                      value="${esc(est && p.ubicacion?.startsWith(est.nombre) ? p.ubicacion.slice(est.nombre.length).replace(/\D/g, '') : (p.ubicacion || '').replace(/\D/g, ''))}">
+                  </div>
+                </div>
                 <div><label>Posición</label><select id="pdPosicion">${posOpts}</select></div>
+                <div><label>Precio por unidad ($)</label><input type="number" id="pdPrecio" value="${p.precio ?? ''}" min="0" step="0.01" placeholder="Opcional"></div>
                 <div class="full"><label>Descripción</label><textarea id="pdDescripcion" maxlength="300">${esc(p.descripcion || '')}</textarea></div>
               </div>
               <button class="btn-primary" id="pdGuardarDatos" style="width:auto;margin-top:16px">Guardar cambios</button>
@@ -311,17 +320,41 @@ const Detalle = (() => {
     } catch { /* noop */ }
   };
 
+  let _guardandoDatos = false;
   const guardarDatos = async () => {
-    if (!Store.esAdmin) return;
+    if (!Store.esAdmin || _guardandoDatos) return;
     const p = Store.get('productoDetalleData');
+    const precioTxt = $('pdPrecio').value.trim();
+    const precio = precioTxt === '' ? null : parseFloat(precioTxt);
+    if (precio !== null && (isNaN(precio) || precio < 0)) {
+      const inp = $('pdPrecio');
+      inp.classList.add('input-error');
+      inp.focus();
+      inp.addEventListener('input', () => inp.classList.remove('input-error'), { once: true });
+      return UI.toast({ msg: 'El precio debe ser 0 o mayor', tipo: 'warn' });
+    }
+    // Ubicación = letra del estante + número de nivel
+    const prefijo = p.estantes?.nombre
+      || Store.get('estantes').find((e) => e.id === p.estante_id)?.nombre || '';
+    const nivelTxt = $('pdUbicNum').value.trim();
     const payload = {
       nombre: $('pdNombre').value.trim(),
       categoria: $('pdCategoria').value,
-      ubicacion: $('pdUbicacion').value.trim(),
+      ubicacion: nivelTxt !== '' ? `${prefijo}${parseInt(nivelTxt)}` : '',
       posicion: $('pdPosicion').value,
+      precio,
       descripcion: $('pdDescripcion').value.trim(),
     };
-    if (!payload.nombre) return UI.toast({ msg: 'El nombre es obligatorio', tipo: 'warn' });
+    if (!payload.nombre) {
+      const inp = $('pdNombre');
+      inp.classList.add('input-error');
+      inp.focus();
+      inp.addEventListener('input', () => inp.classList.remove('input-error'), { once: true });
+      return UI.toast({ msg: 'El nombre es obligatorio', tipo: 'warn' });
+    }
+    const btn = $('pdGuardarDatos');
+    _guardandoDatos = true;
+    btn?.classList.add('btn-loading');
     try {
       const { error } = await Api.productos.actualizar(p.id, payload);
       if (error) throw error;
@@ -329,7 +362,12 @@ const Detalle = (() => {
       await Productos.registrarMovimiento(MOV_ACCION.EDITAR, p, 'Datos editados desde panel');
       UI.toast({ title: '✓ Cambios guardados', tipo: 'ok' });
       cargar();
-    } catch (e) { UI.toast({ title: 'Error al guardar', msg: e.message, tipo: 'err' }); }
+    } catch (e) {
+      UI.toast({ title: 'Error al guardar', msg: e.message, tipo: 'err' });
+    } finally {
+      _guardandoDatos = false;
+      btn?.classList.remove('btn-loading');
+    }
   };
 
   const volver = () => {

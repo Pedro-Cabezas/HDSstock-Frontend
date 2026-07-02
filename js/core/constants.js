@@ -47,8 +47,9 @@ const PERMISOS_VISTA = Object.freeze({
 // ─── Columnas explícitas por tabla (evita select '*') ───
 const COLS = Object.freeze({
   estantes: 'id,nombre,tipo,color,pos_x,pos_y,ancho,alto,rotacion,nave',
-  productos: 'id,estante_id,nombre,categoria,cantidad,ubicacion,posicion,descripcion,codigo,nave',
-  productosConEstante: 'id,estante_id,nombre,categoria,cantidad,ubicacion,posicion,descripcion,codigo,nave,estantes(nombre,tipo,color)',
+  productos: 'id,estante_id,nombre,categoria,cantidad,precio,ubicacion,posicion,descripcion,codigo,nave',
+  productosConEstante: 'id,estante_id,nombre,categoria,cantidad,precio,ubicacion,posicion,descripcion,codigo,nave,estantes(nombre,tipo,color)',
+  productosConEstanteInner: 'id,estante_id,nombre,categoria,cantidad,precio,ubicacion,posicion,descripcion,codigo,nave,estantes!inner(nombre,tipo,color,nave)',
   movimientos: 'id,producto_id,producto_nombre,estante_nombre,usuario_nombre,accion,detalle,cantidad_anterior,cantidad_nueva,fecha',
   pedidos: 'id,usuario_nombre,producto,cantidad,motivo,estado,fecha,resuelto_por,fecha_resolucion',
   perfiles: 'id,nombre,email,rol,estado,fecha_creacion,fecha_aprobacion',
@@ -68,6 +69,16 @@ const PLANO = Object.freeze({
   room: { x: 84, y: 386, w: 150, h: 152 },
   camion: { x: 582, y: 344, w: 166, h: 92 },
 });
+
+// Nave 2: galpón cuadrado, sin referencias (entrada / escalera / zona de carga)
+const PLANO_NAVE2 = Object.freeze({
+  wall: { x: 231, y: 61, w: 478, h: 478 },
+});
+
+// Pared del plano según la nave activa
+function wallNave(nave = 1) {
+  return nave === 2 ? PLANO_NAVE2.wall : PLANO.wall;
+}
 
 // ─── Tipos de estante ───
 const TIPOS = Object.freeze({
@@ -108,6 +119,12 @@ const agregarCategoria = (nombre, color = '#888888') => {
 };
 
 const POSICIONES = Object.freeze(['izquierda', 'centro', 'derecha']);
+
+// ─── Precio: formato ARS ───
+function fmtPrecio(v) {
+  if (v == null || v === '' || isNaN(v)) return '—';
+  return '$' + Number(v).toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+}
 
 // ─── Acciones de movimiento ───
 const MOV_ACCION = Object.freeze({
