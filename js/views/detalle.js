@@ -180,7 +180,10 @@ const Detalle = (() => {
             <div class="pd-qr-meta-wrap">
               ${p.codigo ? `<div class="pd-qr-code">${esc(p.codigo)}</div>` : ''}
               <div class="pd-qr-note">Escaneá para abrir este producto</div>
-              <button class="pd-qr-print" id="pdQrPrint">🖨 Imprimir etiqueta</button>
+              <div class="pd-qr-actions">
+                <button class="pd-qr-print" id="pdQrPrint">🖨 Imprimir etiqueta</button>
+                <button class="pd-qr-print" id="pdQrDownload">⬇ Descargar QR</button>
+              </div>
             </div>
           </div>
         </div>
@@ -246,6 +249,8 @@ const Detalle = (() => {
     if (Store.esAdmin) $('pdGuardarDatos').onclick = guardarDatos;
     const printBtn = $('pdQrPrint');
     if (printBtn) printBtn.onclick = () => imprimirEtiqueta(p);
+    const dlBtn = $('pdQrDownload');
+    if (dlBtn) dlBtn.onclick = () => descargarQR(p);
 
     // Acordeones
     cont.querySelectorAll('.pd-section-toggle').forEach((btn) => {

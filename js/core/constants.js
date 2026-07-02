@@ -161,3 +161,25 @@ function urlProducto(id) {
 function urlQR(id, size = 150) {
   return QR_API + '?size=' + size + 'x' + size + '&data=' + encodeURIComponent(urlProducto(id));
 }
+
+// Descarga el QR de un producto como imagen PNG (alta resolución, lista
+// para imprimir). Si la descarga directa falla, abre la imagen en otra pestaña.
+async function descargarQR(producto) {
+  const archivo = `QR-${producto.codigo || producto.id}.png`;
+  const url = urlQR(producto.id, 600);
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('No se pudo generar el QR');
+    const blob = await res.blob();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = archivo;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+    UI.toast({ title: 'QR descargado', msg: archivo, tipo: 'ok' });
+  } catch {
+    window.open(url, '_blank');
+  }
+}

@@ -66,6 +66,12 @@ const Movimientos = (() => {
       return true;
     });
 
+    // Contador de filtros activos en el botón "Filtros"
+    const activos = [filtro, usuario, estante, periodo].filter(Boolean).length;
+    const badge = $('movFiltrosCount');
+    badge.textContent = activos;
+    badge.classList.toggle('on', activos > 0);
+
     $('movTotal').textContent = `${filtrados.length} movimiento(s)`;
     if (!filtrados.length) { body.innerHTML = UI.emptyRow(7, 'Sin movimientos registrados', '🔄'); return; }
 
@@ -87,6 +93,13 @@ const Movimientos = (() => {
   };
 
   const init = () => {
+    // Mostrar / esconder el panel de filtros
+    const fBtn = $('movFiltrosBtn'), fPanel = $('movFiltros');
+    fBtn.addEventListener('click', () => {
+      const abierto = fPanel.classList.toggle('open');
+      fBtn.classList.toggle('active', abierto);
+    });
+
     $('movAccionFilter').addEventListener('change', render);
     $('movUsuarioFilter').addEventListener('change', render);
     $('movEstanteFilter').addEventListener('change', render);

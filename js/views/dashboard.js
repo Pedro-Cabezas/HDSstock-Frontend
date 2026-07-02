@@ -489,7 +489,9 @@ const Dashboard = (() => {
   };
 
   // ── modal QR ──
+  let _qrProducto = null;
   const abrirQR = (p) => {
+    _qrProducto = p;
     $('dashQrNombre').textContent = p.nombre;
     $('dashQrCodigo').textContent = p.codigo ? 'Código: ' + p.codigo : 'ID: ' + p.id;
     $('dashQrImg').src = urlQR(p.id, 180);
@@ -537,6 +539,7 @@ const Dashboard = (() => {
     $('dashCmpBtn').addEventListener('click', () => compararMeses(_ctx.porMes, _ctx.stockMes));
     $('dashCmpClose').addEventListener('click', cerrarCmp);
     $('dashQrClose').addEventListener('click', cerrarQR);
+    $('dashQrDownload').addEventListener('click', () => { if (_qrProducto) descargarQR(_qrProducto); });
     $('dashQrModal').addEventListener('click', (e) => { if (e.target === $('dashQrModal')) cerrarQR(); });
     // llenar selects del comparador
     const selA = $('dashCmpA'), selB = $('dashCmpB');

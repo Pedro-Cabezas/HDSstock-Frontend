@@ -115,6 +115,11 @@
         <div class="subtitle" id="stockSubtitle">Inventario completo del almacén</div>
         <div class="page-toolbar">
             <input type="text" id="stockSearch" placeholder="Buscar producto…">
+            <button class="btn-filtros" id="stockFiltrosBtn">⚙ Filtros<span class="filtros-count" id="stockFiltrosCount"></span></button>
+            <div class="spacer"></div>
+            <span class="total" id="stockTotal"></span>
+        </div>
+        <div class="page-toolbar filtros-panel" id="stockFiltros">
             <select id="stockCatFilter"><option value="">Todas las categorías</option></select>
             <select id="stockEstanteFilter"><option value="">Todos los estantes</option></select>
             <select id="stockUbicFilter"><option value="">Todos los niveles</option></select>
@@ -133,8 +138,6 @@
                 <option value="precio-desc">Precio: mayor</option>
                 <option value="precio-asc">Precio: menor</option>
             </select>
-            <div class="spacer"></div>
-            <span class="total" id="stockTotal"></span>
         </div>
         <table class="data-table">
             <thead>
@@ -305,7 +308,10 @@
         <div class="dash-qr-sub" id="dashQrCodigo"></div>
         <img id="dashQrImg" src="" alt="Código QR">
         <div class="dash-qr-meta" id="dashQrMeta"></div>
-        <div class="modal-buttons"><button class="btn-primary" id="dashQrClose" style="width:100%;">Cerrar</button></div>
+        <div class="modal-buttons">
+            <button id="dashQrDownload">⬇ Descargar</button>
+            <button class="btn-primary" id="dashQrClose">Cerrar</button>
+        </div>
     </div>
 </div>
 
@@ -319,6 +325,12 @@
                 <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="5"/><line x1="13" y1="13" x2="17" y2="17"/></svg>
                 <input type="text" id="movSearch" class="search-input" placeholder="Buscar movimiento…">
             </div>
+            <button class="btn-filtros" id="movFiltrosBtn">⚙ Filtros<span class="filtros-count" id="movFiltrosCount"></span></button>
+            <button id="movRefresh">Actualizar</button>
+            <div class="spacer"></div>
+            <span class="total" id="movTotal"></span>
+        </div>
+        <div class="page-toolbar filtros-panel" id="movFiltros">
             <select id="movAccionFilter">
                 <option value="">Todas las acciones</option>
                 <option value="crear">Crear</option>
@@ -335,9 +347,6 @@
                 <option value="30">Últimos 30 días</option>
                 <option value="90">Últimos 90 días</option>
             </select>
-            <button id="movRefresh">Actualizar</button>
-            <div class="spacer"></div>
-            <span class="total" id="movTotal"></span>
         </div>
         <table class="data-table">
             <thead>

@@ -59,6 +59,12 @@ const Stock = (() => {
       return true;
     });
 
+    // Contador de filtros activos en el botón "Filtros"
+    const activos = [cat, est, ubic, estado, orden].filter(Boolean).length;
+    const badge = $('stockFiltrosCount');
+    badge.textContent = activos;
+    badge.classList.toggle('on', activos > 0);
+
     // Ordenamiento (por defecto: como llega, agrupado por estante)
     const ordenes = {
       'nombre':      (a, b) => (a.nombre || '').localeCompare(b.nombre || ''),
@@ -94,6 +100,13 @@ const Stock = (() => {
   const init = () => {
     $('stockCatFilter').innerHTML = '<option value="">Todas las categorías</option>' +
       CATEGORIAS.map((c) => `<option value="${c}">${c}</option>`).join('');
+    // Mostrar / esconder el panel de filtros
+    const fBtn = $('stockFiltrosBtn'), fPanel = $('stockFiltros');
+    fBtn.addEventListener('click', () => {
+      const abierto = fPanel.classList.toggle('open');
+      fBtn.classList.toggle('active', abierto);
+    });
+
     $('stockSearch').addEventListener('input', render);
     $('stockCatFilter').addEventListener('change', render);
     $('stockEstanteFilter').addEventListener('change', render);

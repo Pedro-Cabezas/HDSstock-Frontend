@@ -350,6 +350,37 @@
         .page-toolbar .total { font-size: 11px; color: var(--text-dim); }
         .page-toolbar button { width: auto; }
 
+        /* ── Filtros plegables (Stock / Movimientos) ── */
+        .btn-filtros { display: flex; align-items: center; gap: 6px; width: auto; }
+        .btn-filtros.active {
+            color: var(--accent);
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+        .filtros-count {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            min-width: 16px; height: 16px; padding: 0 4px;
+            border-radius: 999px;
+            background: var(--accent); color: #fff;
+            font-size: 9px; font-weight: 700; line-height: 1;
+            animation: popIn 0.25s var(--ease-spring);
+        }
+        .filtros-count.on { display: inline-flex; }
+        .page-toolbar.filtros-panel {
+            max-height: 0;
+            opacity: 0;
+            margin-bottom: 0;
+            overflow: hidden;
+            transition: max-height 0.35s var(--ease), opacity 0.3s var(--ease), margin-bottom 0.35s var(--ease);
+        }
+        .page-toolbar.filtros-panel.open {
+            max-height: 500px;
+            opacity: 1;
+            margin-bottom: 16px;
+        }
+
         /* ===== SEARCH WRAP (lupa en toolbars) ===== */
         .search-wrap {
             position: relative;
